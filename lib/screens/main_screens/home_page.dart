@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utilities/buttons/button_big.dart';
 import '../../utilities/buttons/filter_button.dart';
@@ -12,8 +13,29 @@ import 'event/event_page.dart';
 import 'event_management/create_event.dart';
 import 'view_all.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? fetchedName = prefs.getString('full_name');
+    setState(() {
+      username = fetchedName;
+    });
+  }
 
   final List<Map<String, dynamic>> events = [
     {
@@ -117,6 +139,7 @@ class HomePage extends StatelessWidget {
       "category": "Concert"
     },
   ];
+
   final List<String> categories = [
     "swimming",
     "game",
@@ -137,13 +160,13 @@ class HomePage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
                     Text(
                       'Welcome Back!',
@@ -159,12 +182,13 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  'Firstname',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  username ?? 'Loading...',
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
-            NotificationButton()
+            const NotificationButton()
           ],
         ),
         const SizedBox(

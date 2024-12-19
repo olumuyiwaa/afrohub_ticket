@@ -30,6 +30,7 @@ Future<void> signInAuth(
     if (response.statusCode == 200) {
       // Decode the response to retrieve the token and user ID
       final Map<String, dynamic> responseData = json.decode(response.body);
+      final String id = responseData['id'];
       final String name = responseData['full_name'];
       final String email = responseData['email'];
       final String phone = responseData['phone_number'];
@@ -37,6 +38,7 @@ Future<void> signInAuth(
 
       // Store the user details in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('id', id);
       await prefs.setString('token', token);
       await prefs.setString('full_name', name);
       await prefs.setString('email', email);
@@ -172,10 +174,9 @@ Future<void> signOut({
   };
   try {
     final headers = await getHeaders();
-    final response = await http.post(
+    final response = await http.get(
       Uri.parse('$baseUrl/users/logout'),
       headers: headers,
-      body: json.encode(body),
     );
     if (response.statusCode == 200) {
       if (context.mounted) {

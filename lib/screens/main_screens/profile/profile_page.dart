@@ -1,4 +1,5 @@
 import 'package:afrohub/provider/auth.dart';
+import 'package:afrohub/screens/main_screens/profile/account_deactivation_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +9,7 @@ import '../../not_found_page.dart';
 import '../event_management/ticket_shop.dart';
 import 'change_password.dart';
 import 'edit_profile.dart';
+import 'help.dart';
 import 'privacy_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -40,7 +42,7 @@ class ProfilePage extends StatelessWidget {
         actions: [
           InkWell(
             onTap: () {
-              _signOut;
+              _signOut();
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(
@@ -286,12 +288,12 @@ class ProfilePage extends StatelessWidget {
               context: context,
               title: 'Help',
               icon: 'info.svg',
-              destinationPage: const NotFoundPage()),
+              destinationPage: const HelpPage()),
           buildSettingsTile(
               context: context,
               title: 'Deactivate Account',
               icon: 'profile2.svg',
-              destinationPage: const NotFoundPage()),
+              destinationPage: const AccountDeactivationPage()),
         ],
       ),
     );
