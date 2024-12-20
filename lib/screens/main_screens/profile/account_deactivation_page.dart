@@ -1,7 +1,8 @@
 import 'package:afrohub/utilities/input/input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../auth/sign_in.dart';
+import '../../../provider/auth.dart';
 
 class AccountDeactivationPage extends StatefulWidget {
   const AccountDeactivationPage({Key? key}) : super(key: key);
@@ -12,118 +13,112 @@ class AccountDeactivationPage extends StatefulWidget {
 }
 
 class _AccountDeactivationPageState extends State<AccountDeactivationPage> {
+  String? userEmail;
+  String? userPassword;
+  String? userId;
+
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void deactivateAccount() async {
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userEmail = prefs.getString('email');
+      userPassword = prefs.getString('password');
+      userId = prefs.getString('id');
+    });
+  }
+
+  Future<void> deactivateAccount() async {
     final String password = _passwordController.text.trim();
 
     if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          "Password cannot be empty.",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.red,
-      ));
+      _showSnackBar("Password cannot be empty.", Colors.red);
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (userPassword != password) {
+      _showSnackBar("Password is incorrect, please try again.", Colors.red);
+      return;
+    }
+
+    setState(() => _isLoading = true);
 
     try {
-      // Replace with your API call logic
-      await Future.delayed(const Duration(seconds: 2)); // Simulating API call
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Show success message and navigate
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          "Account successfully deactivated.",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.green,
-      ));
-
-      // Navigate to the sign-in page or home screen
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                const SignIn()), // Replace with your SignInPage
-        (route) => false,
-      );
+      // Call your API
+      await deleteAccount(context: context, userID: userId);
     } catch (error) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "Failed to deactivate account. Error: $error",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.red,
-      ));
+      _showSnackBar("Failed to deactivate account. Error: $error", Colors.red);
+    } finally {
+      setState(() => _isLoading = false);
     }
+  }
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        message,
+        textAlign: TextAlign.center,
+      ),
+      backgroundColor: color,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Deactivate Account"),
-      ),
-      body: ListView(
+      appBar: AppBar(title: const Text("Deactivate Account")),
+      body: Padding(
         padding: const EdgeInsets.all(24),
-        children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Warning",
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.red,
-                    fontWeight: FontWeight.w700),
+        child: ListView(
+          children: [
+            const Text(
+              "Warning",
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.red,
+                fontWeight: FontWeight.w700,
               ),
-              Text(
-                "Deactivating your account will result in the loss of all your saved data and preferences. "
-                "This action cannot be undone.",
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Inputfield(
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Deactivating your account will result in the loss of all your saved data and preferences. "
+              "This action cannot be undone.",
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            Inputfield(
               inputHintText: "Enter your password",
-              inputTitle: "Enter your password",
+              inputTitle: "Password",
               textObscure: false,
               textController: _passwordController,
-              isreadOnly: false),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : deactivateAccount,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      "Deactivate Account",
-                      style: TextStyle(fontSize: 16, color: Colors.red),
-                    ),
+              isreadOnly: false,
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : deactivateAccount,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Deactivate Account",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

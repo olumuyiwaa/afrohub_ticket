@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utilities/buttons/button_big.dart';
-import '../../utilities/buttons/filter_button.dart';
 import '../../utilities/buttons/notification_button.dart';
 import '../../utilities/const.dart';
 import '../../utilities/search.dart';
@@ -11,6 +10,7 @@ import '../../utilities/widget/upcoming_events.dart';
 import 'category_page.dart';
 import 'event/event_page.dart';
 import 'event_management/create_event.dart';
+import 'filter.dart';
 import 'view_all.dart';
 
 class HomePage extends StatefulWidget {
@@ -194,17 +194,38 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(
           height: 40,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
+            const Expanded(
                 child: Search(
               hintText: 'Search for ticket...',
             )),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
-            FilterButton()
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => Filter(
+                              events: events,
+                            )));
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.filter_alt,
+                  color: accentColor,
+                ),
+              ),
+            )
           ],
         ),
         const SizedBox(

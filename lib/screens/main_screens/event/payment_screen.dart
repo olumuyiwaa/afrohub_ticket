@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-// import 'package:flutter_paypal/flutter_paypal.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentScreen extends StatefulWidget {
@@ -30,15 +30,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final paymentIntent = json.decode(response.body);
 
       // Initialize payment sheet
-      // await Stripe.instance.initPaymentSheet(
-      //   paymentSheetParameters: SetupPaymentSheetParameters(
-      //     paymentIntentClientSecret: paymentIntent['client_secret'],
-      //     merchantDisplayName: 'Your Business Name',
-      //   ),
-      // );
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntent['client_secret'],
+          merchantDisplayName: 'Your Business Name',
+        ),
+      );
 
       // Display Stripe payment sheet
-      // await Stripe.instance.presentPaymentSheet();
+      await Stripe.instance.presentPaymentSheet();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Payment successful!')),
@@ -52,61 +52,61 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   // PayPal payment method
   void handlePayPalPayment() {
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) => UsePaypal(
-    //       sandboxMode: true, // Set to false in production
-    //       clientId:
-    //           "your_paypal_client_id", // Replace with your PayPal Client ID
-    //       secretKey:
-    //           "your_paypal_secret", // Replace with your PayPal Secret Key
-    //       returnURL: "success.example.com",
-    //       cancelURL: "cancel.example.com",
-    //       transactions: const [
-    //         {
-    //           "amount": {
-    //             "total": '10.00',
-    //             "currency": "USD",
-    //             "details": {
-    //               "subtotal": '10.00',
-    //               "shipping": '0',
-    //               "shipping_discount": 0
-    //             }
-    //           },
-    //           "description": "The payment transaction description.",
-    //           "item_list": {
-    //             "items": [
-    //               {
-    //                 "name": "Sample Item",
-    //                 "quantity": 1,
-    //                 "price": '10.00',
-    //                 "currency": "USD"
-    //               }
-    //             ]
-    //           }
-    //         }
-    //       ],
-    //       onSuccess: (Map params) {
-    //         print("Success: $params");
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //           const SnackBar(content: Text('PayPal payment successful!')),
-    //         );
-    //       },
-    //       onError: (error) {
-    //         print("Error: $error");
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //           const SnackBar(content: Text('PayPal payment failed!')),
-    //         );
-    //       },
-    //       onCancel: () {
-    //         print('PayPal payment canceled.');
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //           const SnackBar(content: Text('PayPal payment canceled.')),
-    //         );
-    //       },
-    //     ),
-    //   ),
-    // );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => UsePaypal(
+          sandboxMode: true, // Set to false in production
+          clientId:
+              "your_paypal_client_id", // Replace with your PayPal Client ID
+          secretKey:
+              "your_paypal_secret", // Replace with your PayPal Secret Key
+          returnURL: "success.example.com",
+          cancelURL: "cancel.example.com",
+          transactions: const [
+            {
+              "amount": {
+                "total": '10.00',
+                "currency": "USD",
+                "details": {
+                  "subtotal": '10.00',
+                  "shipping": '0',
+                  "shipping_discount": 0
+                }
+              },
+              "description": "The payment transaction description.",
+              "item_list": {
+                "items": [
+                  {
+                    "name": "Sample Item",
+                    "quantity": 1,
+                    "price": '10.00',
+                    "currency": "USD"
+                  }
+                ]
+              }
+            }
+          ],
+          onSuccess: (Map params) {
+            print("Success: $params");
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('PayPal payment successful!')),
+            );
+          },
+          onError: (error) {
+            print("Error: $error");
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('PayPal payment failed!')),
+            );
+          },
+          onCancel: () {
+            print('PayPal payment canceled.');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('PayPal payment canceled.')),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   @override

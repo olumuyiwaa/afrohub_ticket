@@ -1,5 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:flutter_stripe/flutter_stripe.dart';
@@ -15,12 +16,8 @@ Future<bool> isUserLoggedIn() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool isLoggedIn = await isUserLoggedIn();
-
-  // // Initialize Stripe SDK
-
-  // Stripe.publishableKey =
-  //     "your_stripe_publishable_key"; // Replace with your Stripe key
-
+  Stripe.publishableKey =
+      "sk_test_51MkcnODzHsmg6hHDul8FtoLmvEDW6GtcSS6ryP0nMwWwCzNu8QPFZYBxOS2q4GmeHVYsdPvLMp6B9o6RqvtmuiCk0073rV4MSU";
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
@@ -41,6 +38,7 @@ class AfroHub extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 243, 243, 243),
         appBarTheme: const AppBarTheme(
+            surfaceTintColor: const Color.fromARGB(255, 243, 243, 243),
             centerTitle: true,
             iconTheme: IconThemeData(),
             backgroundColor: Color.fromARGB(255, 243, 243, 243)),

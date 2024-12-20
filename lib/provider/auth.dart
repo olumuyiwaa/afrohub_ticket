@@ -43,6 +43,7 @@ Future<void> signInAuth(
       await prefs.setString('full_name', name);
       await prefs.setString('email', email);
       await prefs.setString('phone_number', phone);
+      await prefs.setString('password', password);
       // Show a success Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -105,7 +106,7 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
     );
 
     // Check the response status
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       // Decode the response to retrieve the token and user ID
       final Map<String, dynamic> responseData = json.decode(response.body);
       final String id = responseData['id'];
@@ -121,6 +122,8 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
       await prefs.setString('full_name', name);
       await prefs.setString('email', email);
       await prefs.setString('phone_number', phone);
+      await prefs.setString('password', password);
+
       // Show a success Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -152,9 +155,9 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
   } catch (e) {
     // Handle any exceptions that occur during the HTTP request
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(
-          'Network error encountered, check your connection',
+          e.toString(),
           textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.red,
@@ -165,19 +168,14 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
 
 Future<void> signOut({
   required BuildContext context,
-  required String email,
-  required String password,
 }) async {
-  final Map<String, dynamic> body = {
-    'email': email,
-    'password': password,
-  };
   try {
     final headers = await getHeaders();
     final response = await http.get(
       Uri.parse('$baseUrl/users/logout'),
       headers: headers,
     );
+
     if (response.statusCode == 200) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -187,17 +185,90 @@ Future<void> signOut({
           ),
           backgroundColor: Colors.green,
         ));
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => const SignIn(),
           ),
-          (Route<dynamic> route) =>
-              false, // This removes all routes from the stack.
+          (Route<dynamic> route) => false,
         );
       }
-    } else {}
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Sign Out failed: ${response.reasonPhrase}",
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   } catch (e) {
-    rethrow;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Failed to Sign Out: $e",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<void> deleteAccount({
+  required BuildContext context,
+  required String? userID,
+}) async {
+  try {
+    final headers = await getHeaders();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/users/delete-account/?userId=$userID'),
+      headers: headers,
+    );
+    https: //ticketbackend-0iem.onrender.com/api/users/delete-account/
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            "User Account Successfully Deleted",
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.green,
+        ));
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const SignIn(),
+          ),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "User Account Delete failed: ${response.reasonPhrase}",
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Failed to Sign Out: $e",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 }

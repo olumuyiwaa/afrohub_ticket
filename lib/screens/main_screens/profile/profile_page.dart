@@ -3,6 +3,7 @@ import 'package:afrohub/screens/main_screens/profile/account_deactivation_page.d
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utilities/const.dart';
 import '../../not_found_page.dart';
@@ -12,15 +13,36 @@ import 'edit_profile.dart';
 import 'help.dart';
 import 'privacy_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String? userEmail;
+  String? userName;
+  String? userPhone;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userEmail = prefs.getString('email');
+      userName = prefs.getString('full_name');
+      userPhone = prefs.getString('phone_number');
+    });
+  }
+
   final Map<dynamic, dynamic> user = {
-    "name": "Full Name",
     "image":
         "https://media.licdn.com/dms/image/v2/D4D03AQHT47BuaMJRTg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1713186951164?e=1739404800&v=beta&t=Yw8rKZ6jIeB8tfEyFbWM4PdNGnd6N_lcpyzwVL6D2NQ",
-    "email": "oladoyinemmanuel@gmail.com",
-    "phone": "123456789",
     "interests": [
       "football",
       "comedy",
@@ -34,7 +56,9 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<void> _signOut() async {
-      signOut(password: '123456789', context: context, email: user["email"]);
+      signOut(
+        context: context,
+      );
     }
 
     return Scaffold(
@@ -46,7 +70,7 @@ class ProfilePage extends StatelessWidget {
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.red,
                 borderRadius: BorderRadius.circular(8),
@@ -109,7 +133,7 @@ class ProfilePage extends StatelessWidget {
                         height: 20,
                       ),
                       Text(
-                        user["name"],
+                        userName ?? "Loading...",
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700),
                       ),
@@ -138,7 +162,7 @@ class ProfilePage extends StatelessWidget {
                                 width: 15.0,
                               ),
                               Text(
-                                user["email"],
+                                userEmail ?? "Loading...",
                                 style: const TextStyle(
                                   fontSize: 16,
                                 ),
@@ -159,7 +183,7 @@ class ProfilePage extends StatelessWidget {
                                 width: 15.0,
                               ),
                               Text(
-                                user["phone"],
+                                userPhone ?? "Loading...",
                                 style: const TextStyle(
                                   fontSize: 16,
                                 ),
@@ -245,7 +269,10 @@ class ProfilePage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      EditProfile()));
+                                      EditProfile(
+                                        name: userName!,
+                                        phone: userPhone!,
+                                      )));
                         },
                         icon: Icon(
                           Icons.edit,

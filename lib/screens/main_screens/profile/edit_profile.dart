@@ -10,7 +10,9 @@ import '../../../utilities/const.dart';
 import '../../../utilities/input/input_field.dart';
 
 class EditProfile extends StatefulWidget {
-  EditProfile({super.key});
+  final String name;
+  final String phone;
+  EditProfile({super.key, required this.name, required this.phone});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -33,7 +35,6 @@ class _EditProfileState extends State<EditProfile> {
   ];
 
   final fullName = TextEditingController();
-
   final phoneNumber = TextEditingController();
 
   final Map<String, bool> selectedInterest = {};
@@ -54,6 +55,8 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    fullName.text = widget.name;
+    phoneNumber.text = widget.phone;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -208,7 +211,7 @@ class _EditProfileState extends State<EditProfile> {
                               child: Container(
                                 alignment: Alignment.bottomCenter,
                                 decoration: BoxDecoration(
-                                  color: isSelected ? Colors.white : greyColor,
+                                  color: isSelected ? accentColor : greyColor,
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                     color: isSelected ? accentColor : greyColor,
@@ -229,9 +232,7 @@ class _EditProfileState extends State<EditProfile> {
                                     Container(
                                       height: 40,
                                       decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? accentColor
-                                            : Colors.white,
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Center(
@@ -240,8 +241,8 @@ class _EditProfileState extends State<EditProfile> {
                                               interest.substring(1),
                                           style: TextStyle(
                                             color: isSelected
-                                                ? Colors.white
-                                                : Colors.black,
+                                                ? accentColor
+                                                : greyColor,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
