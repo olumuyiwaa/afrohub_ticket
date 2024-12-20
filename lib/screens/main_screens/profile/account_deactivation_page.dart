@@ -79,51 +79,51 @@ class _AccountDeactivationPageState extends State<AccountDeactivationPage> {
       appBar: AppBar(
         title: const Text("Deactivate Account"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Warning",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Warning",
+                style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.red,
+                    fontWeight: FontWeight.w700),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Deactivating your account will result in the loss of all your saved data and preferences. "
-              "This action cannot be undone.",
-              style: TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 20),
-            Inputfield(
-                inputHintText: "Enter your password",
-                inputTitle: "Enter your password",
-                textObscure: false,
-                textController: _passwordController,
-                isreadOnly: false),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : deactivateAccount,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Deactivate Account",
-                        style: TextStyle(fontSize: 16, color: Colors.red),
-                      ),
+              Text(
+                "Deactivating your account will result in the loss of all your saved data and preferences. "
+                "This action cannot be undone.",
+                style: TextStyle(fontSize: 16),
               ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Inputfield(
+              inputHintText: "Enter your password",
+              inputTitle: "Enter your password",
+              textObscure: false,
+              textController: _passwordController,
+              isreadOnly: false),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : deactivateAccount,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      "Deactivate Account",
+                      style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
