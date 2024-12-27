@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 // Model for notifications
 class TicketNotification {
   final String id;
-  final String EventID;
+  final String eventID;
   final String title;
   final String message;
   final DateTime timestamp;
@@ -14,7 +14,7 @@ class TicketNotification {
 
   TicketNotification({
     required this.id,
-    required this.EventID,
+    required this.eventID,
     required this.title,
     required this.message,
     required this.timestamp,
@@ -29,7 +29,7 @@ enum NotificationType { ticketPurchase, eventReminder, eventUpdate, general }
 final List<TicketNotification> sampleNotifications = [
   TicketNotification(
     id: '1',
-    EventID: '2',
+    eventID: '2',
     title: 'Ticket Purchase Confirmed',
     message:
         'Your tickets for "Taylor Swift Concert" have been confirmed. Check your email for details.',
@@ -38,7 +38,7 @@ final List<TicketNotification> sampleNotifications = [
   ),
   TicketNotification(
     id: '2',
-    EventID: '24',
+    eventID: '24',
     title: 'Event Reminder',
     message:
         'The "Ed Sheeran Concert" starts in 24 hours. Don\'t forget your tickets!',
@@ -47,7 +47,7 @@ final List<TicketNotification> sampleNotifications = [
   ),
   TicketNotification(
     id: '4',
-    EventID: '200',
+    eventID: '200',
     title: 'Venue Change',
     message:
         'There as been an update to the details of "Taylor Swift Concert" by the Organisers. Check details.',
@@ -119,9 +119,9 @@ class NotificationTile extends StatelessWidget {
   final TicketNotification notification;
 
   const NotificationTile({
-    Key? key,
+    super.key,
     required this.notification,
-  }) : super(key: key);
+  });
 
   IconData _getNotificationIcon() {
     switch (notification.type) {

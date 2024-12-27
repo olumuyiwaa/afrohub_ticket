@@ -8,7 +8,7 @@ import '../../utilities/widget/event_card.dart';
 import 'event/event_page.dart';
 
 class Bookmarks extends StatefulWidget {
-  Bookmarks({super.key});
+  const Bookmarks({super.key});
 
   @override
   State<Bookmarks> createState() => _BookmarksState();

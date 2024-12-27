@@ -25,7 +25,7 @@ class PageDragger extends StatefulWidget {
   });
 
   @override
-  _PageDraggerState createState() => _PageDraggerState();
+  State<PageDragger> createState() => _PageDraggerState();
 }
 
 class _PageDraggerState extends State<PageDragger> {

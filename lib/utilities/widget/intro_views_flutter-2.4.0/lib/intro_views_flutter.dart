@@ -91,7 +91,7 @@ class IntroViewsFlutter extends StatefulWidget {
   });
 
   @override
-  _IntroViewsFlutterState createState() => _IntroViewsFlutterState();
+  State<IntroViewsFlutter> createState() => _IntroViewsFlutterState();
 }
 
 /// State of above widget.

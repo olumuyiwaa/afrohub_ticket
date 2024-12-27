@@ -111,8 +111,8 @@ class _SplashScreensState extends State<SplashScreens> {
           ),
         ),
         onTapDoneButton: () async {
-          Navigator.of(context).pushReplacement(
-              PageRouteBuilder(pageBuilder: (_, __, ___) => WelcomeScreen()));
+          Navigator.of(context).pushReplacement(PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const WelcomeScreen()));
           // Get.toNamed(Routes.loginRoute);
         },
       ),

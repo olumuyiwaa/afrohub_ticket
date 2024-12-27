@@ -8,7 +8,7 @@ import 'auth/onboarding/sign_up.dart';
 import 'auth/sign_in.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  WelcomeScreen({super.key});
+  const WelcomeScreen({super.key});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -63,16 +63,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   NetworkImage(_currentUser!.photoUrl ?? ''),
                               radius: 40,
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
                               'Name: ${_currentUser!.displayName}',
-                              style: TextStyle(fontSize: 18),
+                              style: const TextStyle(fontSize: 18),
                             ),
                             Text(
                               'Email: ${_currentUser!.email}',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () async {
                                 await _googleSignInProvider.signOut();
@@ -80,12 +80,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   _currentUser = null;
                                 });
                               },
-                              child: Text('Sign Out'),
+                              child: const Text('Sign Out'),
                             ),
                           ],
                         ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {
                     Navigator.push(

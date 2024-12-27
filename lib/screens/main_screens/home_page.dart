@@ -17,7 +17,7 @@ import 'filter.dart';
 import 'view_all.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(
           height: 12,
         ),
-        UpcomingEvents(),
+        const UpcomingEvents(),
         const SizedBox(
           height: 16,
         ),

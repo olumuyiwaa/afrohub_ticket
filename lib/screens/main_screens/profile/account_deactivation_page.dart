@@ -5,10 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/auth.dart';
 
 class AccountDeactivationPage extends StatefulWidget {
-  const AccountDeactivationPage({Key? key}) : super(key: key);
+  const AccountDeactivationPage({super.key});
 
   @override
-  _AccountDeactivationPageState createState() =>
+  State<AccountDeactivationPage> createState() =>
       _AccountDeactivationPageState();
 }
 

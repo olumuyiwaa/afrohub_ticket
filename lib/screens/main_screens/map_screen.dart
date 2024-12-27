@@ -95,7 +95,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                   ],
                 ),
-          Positioned(
+          const Positioned(
             left: 0,
             right: 0,
             bottom: 12,

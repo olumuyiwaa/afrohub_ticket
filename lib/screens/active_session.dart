@@ -45,11 +45,11 @@ class _ActiveSessionState extends State<ActiveSession> {
   Widget build(BuildContext context) {
     // Pages to display for each BottomNavigationBarItem
     final List<Widget> selectedPage = [
-      HomePage(),
-      Bookmarks(),
+      const HomePage(),
+      const Bookmarks(),
       const MapScreen(),
       Tickets(),
-      ProfilePage(),
+      const ProfilePage(),
     ];
 
     return Scaffold(

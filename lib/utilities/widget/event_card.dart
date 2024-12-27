@@ -138,7 +138,7 @@ class EventCard extends StatelessWidget {
                       : const SizedBox.shrink(),
                   const Spacer(),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     height: 24,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),

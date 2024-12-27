@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 const BUBBLE_WIDTH = 55.0;
 
 const FULL_TARNSITION_PX = 300.0;

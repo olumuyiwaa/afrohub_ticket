@@ -14,7 +14,7 @@ import 'help.dart';
 import 'privacy_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({super.key});
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _signOut() async {
+    Future<void> signUserOut() async {
       signOut(
         context: context,
       );
@@ -65,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           InkWell(
             onTap: () {
-              _signOut();
+              signUserOut();
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(

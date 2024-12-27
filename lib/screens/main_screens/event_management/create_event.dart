@@ -96,7 +96,9 @@ class _CreateEventState extends State<CreateEvent> {
           longitude = locations.first.longitude.toString();
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      // to use catch
+    }
   }
 
   // Submit Form Handler
@@ -203,7 +205,7 @@ class _CreateEventState extends State<CreateEvent> {
                       ? 'Event Price is required'
                       : null,
                 )),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(
@@ -261,7 +263,7 @@ class _CreateEventState extends State<CreateEvent> {
                       ? 'Event Date is required'
                       : null,
                 )),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(

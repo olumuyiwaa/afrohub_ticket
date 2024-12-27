@@ -96,7 +96,9 @@ class _EditEventState extends State<EditEvent> {
           longitude = locations.first.longitude.toString();
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      //to use catch here
+    }
   }
 
   // Submit Form Handler

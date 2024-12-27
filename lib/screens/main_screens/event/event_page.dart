@@ -334,7 +334,7 @@ class _EventPageState extends State<EventPage> {
                         const SizedBox(
                           height: 24,
                         ),
-                        UpcomingEvents(),
+                        const UpcomingEvents(),
                         const SizedBox(
                           height: 92,
                         )

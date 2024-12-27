@@ -9,7 +9,7 @@ import '../const.dart';
 import 'event_card.dart';
 
 class UpcomingEvents extends StatefulWidget {
-  UpcomingEvents({super.key});
+  const UpcomingEvents({super.key});
 
   @override
   State<UpcomingEvents> createState() => _UpcomingEventsState();

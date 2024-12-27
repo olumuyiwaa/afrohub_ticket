@@ -12,7 +12,7 @@ import '../../../utilities/input/input_field.dart';
 class EditProfile extends StatefulWidget {
   final String name;
   final String phone;
-  EditProfile({super.key, required this.name, required this.phone});
+  const EditProfile({super.key, required this.name, required this.phone});
 
   @override
   State<EditProfile> createState() => _EditProfileState();

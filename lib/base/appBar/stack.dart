@@ -50,7 +50,6 @@ class Stack extends widget.Stack {
 /// Enable overflow hitTest
 class _RenderStack extends RenderStack {
   _RenderStack({
-    super.children,
     super.alignment,
     super.textDirection,
     super.fit,

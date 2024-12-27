@@ -15,35 +15,6 @@ class TicketShop extends StatefulWidget {
 
 class _TicketShopState extends State<TicketShop> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController currentPassword = TextEditingController();
-  final TextEditingController newPassword = TextEditingController();
-  final TextEditingController confirmNewPassword = TextEditingController();
-
-  String? _validateConfirmPassword(String? value) {
-    if (value != newPassword.text) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
-
-  Future<void> _updatePassword() async {
-    if (newPassword.text != confirmNewPassword.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
-      return;
-    }
-
-    try {
-      // await updatePassword(
-      //   context: context,
-      //   oldPassword: currentPassword.text,
-      //   newPassword: newPassword.text,
-      //   confirmPassword: confirmNewPassword.text,
-      // );
-      // ignore: empty_catches
-    } catch (e) {}
-  }
 
   final List<Map<String, dynamic>> events = [
     {

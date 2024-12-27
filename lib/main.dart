@@ -38,7 +38,7 @@ class AfroHub extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 243, 243, 243),
         appBarTheme: const AppBarTheme(
-            surfaceTintColor: const Color.fromARGB(255, 243, 243, 243),
+            surfaceTintColor: Color.fromARGB(255, 243, 243, 243),
             centerTitle: true,
             iconTheme: IconThemeData(),
             backgroundColor: Color.fromARGB(255, 243, 243, 243)),

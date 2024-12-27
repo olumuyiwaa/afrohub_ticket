@@ -100,19 +100,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
             }
           ],
           onSuccess: (Map params) {
-            print("Success: $params");
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('PayPal payment successful!')),
             );
           },
           onError: (error) {
-            print("Error: $error");
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('PayPal payment failed!')),
             );
           },
           onCancel: () {
-            print('PayPal payment canceled.');
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('PayPal payment canceled.')),
             );
