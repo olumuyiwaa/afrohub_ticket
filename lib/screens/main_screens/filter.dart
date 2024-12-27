@@ -1,11 +1,12 @@
 import 'package:afrohub/utilities/const.dart';
 import 'package:flutter/material.dart';
 
+import '../../model/events.dart';
 import '../../utilities/widget/event_card_2.dart';
 import 'event/event_page.dart';
 
 class Filter extends StatefulWidget {
-  final List<Map<String, dynamic>> events;
+  final List<Event> events;
 
   const Filter({super.key, required this.events});
 
@@ -15,7 +16,7 @@ class Filter extends StatefulWidget {
 
 class _FilterState extends State<Filter> {
   // Filtered list
-  List<Map<String, dynamic>> filteredEvents = [];
+  List<Event> filteredEvents = [];
   List<String> selectedCategories = ['All'];
 
   @override
@@ -31,7 +32,7 @@ class _FilterState extends State<Filter> {
         filteredEvents = widget.events;
       } else {
         filteredEvents = widget.events
-            .where((event) => selectedCategories.contains(event['category']))
+            .where((event) => selectedCategories.contains(event.category))
             .toList();
       }
     });
@@ -44,6 +45,7 @@ class _FilterState extends State<Filter> {
         final allCategories = [
           'All',
           "Swimming",
+          "Sport",
           "Game",
           "Football",
           "Comedy",
@@ -163,16 +165,16 @@ class _FilterState extends State<Filter> {
                             context,
                             MaterialPageRoute(
                                 builder: (BuildContext context) => EventPage(
-                                      eventId: event["id"],
+                                      eventId: event.id,
                                     )));
                       },
                       child: EventCard2(
-                        image: event["image"],
-                        title: event["title"],
-                        location: event["location"],
-                        date: event["date"],
-                        category: event["category"],
-                        price: event["price"].toString(),
+                        title: event.title,
+                        image: event.image ?? "",
+                        location: event.location,
+                        date: event.date,
+                        price: event.price,
+                        category: event.category,
                       ),
                     ));
               },

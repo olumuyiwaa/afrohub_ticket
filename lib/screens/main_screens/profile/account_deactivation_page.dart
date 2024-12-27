@@ -2,7 +2,7 @@ import 'package:afrohub/utilities/input/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../provider/auth.dart';
+import '../../../api/auth.dart';
 
 class AccountDeactivationPage extends StatefulWidget {
   const AccountDeactivationPage({Key? key}) : super(key: key);

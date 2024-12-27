@@ -1,7 +1,7 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../provider/auth.dart';
+import '../../../api/auth.dart';
 import '../../../utilities/buttons/button_big.dart';
 import '../../../utilities/const.dart';
 import '../../../utilities/input/input_field.dart';

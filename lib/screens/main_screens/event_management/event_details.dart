@@ -127,9 +127,9 @@ class EventDetails extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => const EventChat(
+                            builder: (BuildContext context) => EventChat(
                                 eventID: 1,
-                                eventName: "Event Name",
+                                eventName: event["title"],
                                 eventPicture:
                                     "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
                   },

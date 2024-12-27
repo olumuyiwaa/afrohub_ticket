@@ -1,10 +1,10 @@
-import 'package:afrohub/provider/auth.dart';
 import 'package:afrohub/screens/main_screens/profile/account_deactivation_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../api/auth.dart';
 import '../../../utilities/const.dart';
 import '../../not_found_page.dart';
 import '../event_management/ticket_shop.dart';
@@ -41,8 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   final Map<dynamic, dynamic> user = {
-    "image":
-        "https://media.licdn.com/dms/image/v2/D4D03AQHT47BuaMJRTg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1713186951164?e=1739404800&v=beta&t=Yw8rKZ6jIeB8tfEyFbWM4PdNGnd6N_lcpyzwVL6D2NQ",
+    "image": "",
     "interests": [
       "football",
       "comedy",
@@ -293,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           buildSettingsTile(
               context: context,
-              title: 'Ticket Shop',
+              title: 'My Ticket Shop',
               icon: 'shop.svg',
               destinationPage: const TicketShop()),
           buildSettingsTile(

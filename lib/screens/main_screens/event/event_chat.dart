@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../utilities/const.dart';
-import '../../../utilities/input/message_input.dart';
-import '../../../utilities/widget/image_container.dart';
 
 class EventChat extends StatefulWidget {
   final int eventID;
   final String eventName;
   final String? eventPicture;
-  final VoidCallback? onExit;
-  const EventChat(
-      {super.key,
-      required this.eventID,
-      required this.eventName,
-      this.eventPicture,
-      this.onExit});
+  const EventChat({
+    super.key,
+    required this.eventID,
+    required this.eventName,
+    this.eventPicture,
+  });
 
   @override
   State<EventChat> createState() => _EventChatState();
@@ -24,48 +21,23 @@ class EventChat extends StatefulWidget {
 
 class _EventChatState extends State<EventChat> {
   final ScrollController _scrollController = ScrollController();
-  int sessionUserID = 1; // to be handled
-
-  Future<void> _loadMessages() async {
-    final fetchedMessages = [];
-    setState(() {
-      _messages = fetchedMessages.reversed.toList();
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
-  }
+  final TextEditingController messageContent = TextEditingController();
+  // Mock data for chat messages
+  final List<Map<String, dynamic>> messages = [
+    {'userId': '3', 'userName': 'Charlie', 'text': 'Hi everyone!'},
+    {'userId': '1', 'userName': 'Alice', 'text': 'Hey, how are you?'},
+    {'userId': '2', 'userName': 'Bob', 'text': 'I am good, you?'},
+    {'userId': '1', 'userName': 'Alice', 'text': 'Doing well!'},
+  ];
+  //.reversed.toList();
+  // Mock logged-in user ID
+  final String loggedInUserId = '1';
 
   @override
   void initState() {
     super.initState();
-    // _initializeSocket();
-    // _loadSessionUserID();
-    // _loadMessages();
-  }
-
-  List<dynamic> _messages = [];
-  //
-  // Future<void> _initializeSocket() async {
-  //   await _socketService.init();
-  //   _socketService.connect();
-  //
-  //   _socketService.socket.on('familyMessage', _handleEventMessage);
-  // }
-
-  void _handleCommunityMessage(data) {
-    setState(() {
-      _loadMessages();
-    });
     _scrollToBottom();
   }
-
-  // Future<void> _loadSessionUserID() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     sessionUserID = prefs.getInt('id');
-  //   });
-  // }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -79,238 +51,159 @@ class _EventChatState extends State<EventChat> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          if (widget.onExit != null) {
-            widget.onExit!();
-          }
-          return true;
-        },
-        child: Scaffold(
-            appBar: AppBar(
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
-                const SizedBox(
-                  width: 4,
-                )
-              ],
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  widget.eventPicture != null
-                      ? Container(
-                          clipBehavior: Clip.hardEdge,
-                          height: 36,
-                          width: 36,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(120),
-                          ),
-                          child: CachedNetworkImage(
-                            imageUrl: widget.eventPicture!,
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(
-                              color: accentColor,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                SvgPicture.asset('assets/svg/communities.svg'),
-                            fit: BoxFit.cover, // Adjust image fitting
-                          ))
-                      : CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: SvgPicture.asset('assets/svg/communities.svg'),
-                        ),
-                  const SizedBox(
-                    width: 12,
+    return Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+            const SizedBox(
+              width: 4,
+            )
+          ],
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  clipBehavior: Clip.hardEdge,
+                  height: 36,
+                  width: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(120),
                   ),
-                  Expanded(
-                      child: Text(
-                    widget.eventName,
-                  )),
-                ],
-              ),
-            ),
-            body: SafeArea(
-              child: sessionUserID == null
-                  ? Center(
-                      child: CircularProgressIndicator(
+                  child: CachedNetworkImage(
+                    imageUrl: widget.eventPicture!,
+                    placeholder: (context, url) => CircularProgressIndicator(
                       color: accentColor,
-                    ))
-                  : Column(
-                      children: [
-                        Expanded(
-                          child: _messages.isEmpty
-                              ? Center(
-                                  child: Image.asset(
-                                    'assets/img/noMessage.png',
-                                  ),
-                                )
-                              : ListView.builder(
-                                  controller:
-                                      _scrollController, // Attach controller
-                                  itemCount: _messages.length,
-                                  itemBuilder: (context, index) {
-                                    final message = _messages[index];
-                                    final isSender =
-                                        int.tryParse(message.senderId) ==
-                                            sessionUserID;
-
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Column(
-                                        crossAxisAlignment: isSender
-                                            ? CrossAxisAlignment.end
-                                            : CrossAxisAlignment.start,
-                                        children: [
-                                          isSender
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    const Text('You'),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Container(
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        height: 24,
-                                                        width: 24,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.black,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(24),
-                                                        ),
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl: message
-                                                              .senderImage,
-                                                          placeholder: (context,
-                                                                  url) =>
-                                                              CircularProgressIndicator(
-                                                            color: accentColor,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              SvgPicture.asset(
-                                                                  'assets/svg/usericon.svg'),
-                                                          fit: BoxFit
-                                                              .cover, // Adjust image fitting
-                                                        )),
-                                                  ],
-                                                )
-                                              : Row(
-                                                  children: [
-                                                    Container(
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        height: 24,
-                                                        width: 24,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.black,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(24),
-                                                        ),
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl: message
-                                                              .senderImage,
-                                                          placeholder: (context,
-                                                                  url) =>
-                                                              CircularProgressIndicator(
-                                                            color: accentColor,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              SvgPicture.asset(
-                                                                  'assets/svg/usericon.svg'),
-                                                          fit: BoxFit
-                                                              .cover, // Adjust image fitting
-                                                        )),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Text(message.senderName)
-                                                  ],
-                                                ),
-                                          const SizedBox(
-                                            height: 4,
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 12),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(18),
-                                              color: isSender
-                                                  ? const Color(0XFFEAFBED)
-                                                  : Colors.white,
-                                            ),
-                                            child: message.mediaUrl != null &&
-                                                    message.mediaType != null
-                                                ? Column(
-                                                    crossAxisAlignment: isSender
-                                                        ? CrossAxisAlignment.end
-                                                        : CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      ImageContainer(
-                                                        mediaUrl:
-                                                            message.mediaUrl!,
-                                                        height: 320,
-                                                        width: 240,
-                                                      ),
-                                                      const SizedBox(height: 8),
-                                                      Text(
-                                                        message.data,
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                : Text(
-                                                    message.data,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12),
-                                            child: Text(
-                                              message.timestamp,
-                                              style: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.grey),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                        ),
-                        MessageInput(
-                          destinationID: widget.eventID,
-                          onMessageSent: (newMessage) {
-                            _loadMessages;
-                          },
-                          sessionUserID: sessionUserID!,
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        )
-                      ],
                     ),
-            )));
+                    errorWidget: (context, url, error) =>
+                        SvgPicture.asset('assets/svg/communities.svg'),
+                    fit: BoxFit.cover, // Adjust image fitting
+                  )),
+              const SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                  child: Text(widget.eventName,
+                      style: const TextStyle(fontSize: 18))),
+            ],
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[messages.length - 1 - index];
+                    final isMe = message['userId'] == loggedInUserId;
+                    return Align(
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Row(
+                          mainAxisAlignment: isMe
+                              ? MainAxisAlignment.end
+                              : MainAxisAlignment.start,
+                          children: [
+                            if (!isMe) ...[
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.grey,
+                                child: Text(
+                                  message['userName'][0],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isMe ? accentColor : Colors.grey[300],
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(12),
+                                    topRight: const Radius.circular(12),
+                                    bottomLeft: isMe
+                                        ? const Radius.circular(12)
+                                        : Radius.zero,
+                                    bottomRight: isMe
+                                        ? Radius.zero
+                                        : const Radius.circular(12),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (!isMe)
+                                      Text(
+                                        message['userName'],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    Text(
+                                      message['text'],
+                                      style: TextStyle(
+                                        color: isMe
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (isMe) const SizedBox(width: 8),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(width: 2, color: accentColor)),
+                          child: TextField(
+                            controller: messageContent,
+                            maxLines: null,
+                            cursorColor: accentColor,
+                            decoration: InputDecoration(
+                              hintStyle: TextStyle(color: greyColor),
+                              hintText: 'Type your message...',
+                              border: InputBorder.none,
+                            ),
+                          )),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(
+                        Icons.send,
+                        color: accentColor,
+                        size: 32,
+                      ),
+                      onPressed: () {
+                        // Add message send functionality
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }

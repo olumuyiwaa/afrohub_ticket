@@ -74,7 +74,8 @@ class _MapScreenState extends State<MapScreen> {
                       fallbackUrl:
                           "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
                       subdomains: const ['a', 'b', 'c', 'd'],
-                      errorImage: const AssetImage('assets/error_tile.png'),
+                      errorImage:
+                          const AssetImage('assets/images/error_tile.png'),
                     ),
                     if (_currentLocation != null)
                       flutter_map.MarkerLayer(

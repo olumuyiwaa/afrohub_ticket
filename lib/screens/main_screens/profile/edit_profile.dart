@@ -101,8 +101,7 @@ class _EditProfileState extends State<EditProfile> {
                                     width: 254,
                                   )
                                 : CachedNetworkImage(
-                                    imageUrl:
-                                        "https://media.licdn.com/dms/image/v2/D4D03AQHT47BuaMJRTg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1713186951164?e=1739404800&v=beta&t=Yw8rKZ6jIeB8tfEyFbWM4PdNGnd6N_lcpyzwVL6D2NQ",
+                                    imageUrl: "",
                                     placeholder: (context, url) => Center(
                                       child: CircularProgressIndicator(
                                         color: accentColor,

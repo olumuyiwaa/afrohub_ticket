@@ -68,8 +68,12 @@ class EventCard2 extends StatelessWidget {
             )),
             Text(
               date,
-              style: const TextStyle(fontSize: 12),
-            ),
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 12,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
           ],
         ),
         const SizedBox(

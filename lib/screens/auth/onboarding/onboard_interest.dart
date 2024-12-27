@@ -72,7 +72,7 @@ class _OnboardInterestState extends State<OnboardInterest> {
                       child: Container(
                         alignment: Alignment.bottomCenter,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white : greyColor,
+                          color: isSelected ? accentColor : greyColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: isSelected ? accentColor : greyColor,
@@ -92,7 +92,7 @@ class _OnboardInterestState extends State<OnboardInterest> {
                             Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                color: isSelected ? accentColor : Colors.white,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Center(
@@ -100,9 +100,7 @@ class _OnboardInterestState extends State<OnboardInterest> {
                                   interest[0].toUpperCase() +
                                       interest.substring(1),
                                   style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: isSelected ? accentColor : greyColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),

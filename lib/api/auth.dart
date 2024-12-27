@@ -229,7 +229,6 @@ Future<void> deleteAccount({
       Uri.parse('$baseUrl/users/delete-account/?userId=$userID'),
       headers: headers,
     );
-    https: //ticketbackend-0iem.onrender.com/api/users/delete-account/
     if (response.statusCode == 200) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

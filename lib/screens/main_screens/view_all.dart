@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../model/events.dart';
 import '../../utilities/buttons/notification_button.dart';
 import '../../utilities/widget/event_card.dart';
 import 'event/event_page.dart';
 
 class ViewAll extends StatelessWidget {
   final String title;
-  final List<Map<String, dynamic>> events;
+  final List<Event> events;
   const ViewAll({super.key, required this.title, required this.events});
 
   @override
@@ -37,16 +38,16 @@ class ViewAll extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => EventPage(
-                                eventId: event["id"],
+                                eventId: event.id,
                               )));
                 },
                 child: EventCard(
-                  image: event["image"],
-                  title: event["title"],
-                  location: event["location"],
-                  date: event["date"],
-                  category: event["category"],
-                  price: event["price"].toString(),
+                  title: event.title,
+                  image: event.image ?? "",
+                  location: event.location,
+                  date: event.date,
+                  price: event.price,
+                  category: event.category,
                 ),
               ));
         },

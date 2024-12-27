@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../provider/google_sign_in_provider.dart';
+import '../api/google_sign_in_provider.dart';
 import 'auth/onboarding/sign_up.dart';
 import 'auth/sign_in.dart';
 
@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         decoration: const BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
-            image: AssetImage('assets/welcome.png'),
+            image: AssetImage('assets/images/welcome.png'),
             fit: BoxFit.cover,
           ),
         ),
