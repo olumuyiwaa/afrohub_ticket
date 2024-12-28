@@ -14,6 +14,7 @@ import 'category_page.dart';
 import 'event/event_page.dart';
 import 'event_management/create_event.dart';
 import 'filter.dart';
+import 'search_result.dart';
 import 'view_all.dart';
 
 class HomePage extends StatefulWidget {
@@ -108,9 +109,19 @@ class _HomePageState extends State<HomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
+            Expanded(
                 child: Search(
               hintText: 'Search for ticket...',
+              onSubmitted: (query) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => SearchResult(
+                      text: query,
+                    ),
+                  ),
+                );
+              },
             )),
             const SizedBox(
               width: 16,

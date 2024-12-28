@@ -1,7 +1,6 @@
 import 'package:afrohub/screens/main_screens/tickets/ticket_page.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utilities/buttons/notification_button.dart';
 import '../../../utilities/widget/event_card.dart';
 
 class Tickets extends StatelessWidget {
@@ -113,13 +112,6 @@ class Tickets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          actions: const [
-            NotificationButton(),
-            SizedBox(
-              width: 8,
-            )
-          ],
-          automaticallyImplyLeading: false,
           title: const Text(
             'My Tickets',
             style: TextStyle(fontSize: 18),

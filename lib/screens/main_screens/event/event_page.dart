@@ -131,8 +131,23 @@ class _EventPageState extends State<EventPage> {
           : NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
-                  leading: const BackButton(
-                    color: Colors.black,
+                  leading: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      margin: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: greyColor,
+                      ),
+                    ),
                   ),
                   actions: [
                     InkWell(
@@ -143,6 +158,7 @@ class _EventPageState extends State<EventPage> {
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
+                        margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -154,9 +170,6 @@ class _EventPageState extends State<EventPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 16,
-                    )
                   ],
                   expandedHeight: 320,
                   floating: false,

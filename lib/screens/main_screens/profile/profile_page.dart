@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/auth.dart';
 import '../../../utilities/const.dart';
-import '../../not_found_page.dart';
 import '../event_management/ticket_shop.dart';
+import '../tickets/tickets.dart';
 import 'change_password.dart';
 import 'edit_profile.dart';
 import 'help.dart';
@@ -302,9 +302,9 @@ class _ProfilePageState extends State<ProfilePage> {
               destinationPage: const ChangePassword()),
           buildSettingsTile(
               context: context,
-              title: 'Payment Method',
-              icon: 'card.svg',
-              destinationPage: const NotFoundPage()),
+              title: 'My Tickets',
+              icon: 'ticket.svg',
+              destinationPage: Tickets()),
           buildSettingsTile(
               context: context,
               title: 'Privacy',
