@@ -464,7 +464,7 @@ class _CountryPageState extends State<CountryPage> {
                           height: 12,
                         ),
                         events.isEmpty
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

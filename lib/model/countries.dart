@@ -3,7 +3,7 @@ class Country {
   final String image;
   final String title;
   final String president;
-  final String independence_date;
+  final String independenceDate;
   final String capital;
   final String currency;
   final String population;
@@ -25,7 +25,7 @@ class Country {
     required this.image,
     required this.title,
     required this.president,
-    required this.independence_date,
+    required this.independenceDate,
     required this.capital,
     required this.currency,
     required this.population,
@@ -49,7 +49,7 @@ class Country {
       image: json['image'] ?? "",
       title: json['title'] ?? "",
       president: json['president'] ?? "",
-      independence_date: json['independence_date'] ?? "",
+      independenceDate: json['independenceDate'] ?? "",
       capital: json['capital'] ?? "",
       currency: json['currency'] ?? "",
       population: json['population'] ?? "",

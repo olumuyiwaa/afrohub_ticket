@@ -88,7 +88,7 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
             )
           : GridView.builder(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: events.length,
