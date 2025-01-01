@@ -7,7 +7,9 @@ import 'package:afrohub/utilities/input/input_field_large.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../api/api_post.dart';
 import '../../../utilities/input/input_field.dart';
 
 class CreateEvent extends StatefulWidget {
@@ -23,34 +25,100 @@ class _CreateEventState extends State<CreateEvent> {
   String latitude = "";
   String longitude = "";
 
-  // Controllers for input fields
-  final eventTitle = TextEditingController();
-  final eventLocation = TextEditingController();
-  final eventDescription = TextEditingController();
-  final eventDate = TextEditingController();
-  final eventTime = TextEditingController();
-  final eventPrice = TextEditingController();
-  final eventAddress = TextEditingController();
+  String? userID;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userID = prefs.getString('id');
+    });
+  }
 
   final _formKey = GlobalKey<FormState>();
 
-  final List<String> categories = [
-    "Swimming",
-    "Game",
-    "Football",
-    "Comedy",
-    "Concert",
-    "Trophy",
-    "Tour",
-    "Festival",
-    "Study",
-    "Party",
-    "Olympic",
-    "Culture"
-  ];
-  String? selectedCategory;
+  // Controllers for input fields
+  final TextEditingController eventTitle = TextEditingController();
+  final TextEditingController eventLocation = TextEditingController();
+  final TextEditingController eventDescription = TextEditingController();
+  final TextEditingController eventDate = TextEditingController();
+  final TextEditingController eventTime = TextEditingController();
+  final TextEditingController eventPrice = TextEditingController();
+  final TextEditingController eventAddress = TextEditingController();
+  final TextEditingController eventUnit = TextEditingController();
 
-  // Pick Cover Image
+  final List<String> africanCountries = [
+    "All Africa",
+    "Western Africa",
+    "Eastern Africa",
+    "Northern Africa",
+    "Southern Africa",
+    "Algeria",
+    "Angola",
+    "Benin",
+    "Botswana",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cameroon",
+    "Central African Republic",
+    "Chad",
+    "Comoros",
+    "Congo",
+    "Congo (DRC)",
+    "Djibouti",
+    "Egypt",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Eswatini",
+    "Ethiopia",
+    "Gabon",
+    "Gambia",
+    "Ghana",
+    "Guinea",
+    "Guinea-Bissau",
+    "Ivory Coast",
+    "Kenya",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Madagascar",
+    "Malawi",
+    "Mali",
+    "Mauritania",
+    "Mauritius",
+    "Morocco",
+    "Mozambique",
+    "Namibia",
+    "Niger",
+    "Nigeria",
+    "Rwanda",
+    "Sao Tome and Principe",
+    "Senegal",
+    "Seychelles",
+    "Sierra Leone",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Sudan",
+    "Tanzania",
+    "Togo",
+    "Tunisia",
+    "Uganda",
+    "Zambia",
+    "Zimbabwe"
+  ];
+
+  String? selectedAfricanCountry;
+
+  bool isLoading = false;
+
+  // Utility methods
   Future<void> _pickCoverImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -61,33 +129,33 @@ class _CreateEventState extends State<CreateEvent> {
     }
   }
 
-  // Pick Time
-  Future<void> selectTime(BuildContext context) async {
+  Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        builder: (BuildContext context, Widget? child) {
-          return Theme(
-            data: ThemeData.light().copyWith(
-              colorScheme: ColorScheme.light(
-                primary: accentColor,
-                onPrimary: Colors.white,
-              ),
-              dialogBackgroundColor: Colors.white,
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: accentColor,
+              onPrimary: Colors.white,
             ),
-            child: child!,
-          );
-        });
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
     if (picked != null) {
       setState(() {
         selectedTime = picked;
         eventTime.text =
-            "${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}";
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
       });
     }
   }
 
-  Future<void> getLatLongFromAddress(String address) async {
+  Future<void> _getLatLongFromAddress(String address) async {
     try {
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
@@ -97,29 +165,79 @@ class _CreateEventState extends State<CreateEvent> {
         });
       }
     } catch (e) {
-      // to use catch
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to fetch location. Please check the address.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
-  // Submit Form Handler
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      getLatLongFromAddress(eventAddress.text);
+      setState(() {
+        isLoading = true;
+      });
+
+      await _getLatLongFromAddress(eventAddress.text);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      await createEvent(
+        context: context,
+        userID: "$userID",
+        title: eventTitle.text,
+        location: eventLocation.text,
+        price: eventPrice.text,
+        category: selectedAfricanCountry ?? '',
+        date: eventDate.text,
+        time: eventTime.text,
+        address: eventAddress.text,
+        description: eventDescription.text,
+        latitude: latitude,
+        longitude: longitude,
+        unit: eventUnit.text,
+        coverImage: _coverImage,
+      );
     }
+  }
+
+  Widget _buildInputField({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    bool isReadOnly = false,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+  }) {
+    return Inputfield(
+      isreadOnly: isReadOnly,
+      inputHintText: hintText,
+      inputTitle: title,
+      textObscure: false,
+      textController: controller,
+      validator: validator,
+      icon: suffixIcon,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create Event"),
+        title: const Text(
+          "Create Event",
+          style: TextStyle(fontSize: 18),
+        ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
           children: [
-            // Cover Image
             GestureDetector(
               onTap: _pickCoverImage,
               child: Container(
@@ -143,150 +261,112 @@ class _CreateEventState extends State<CreateEvent> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Event Title
-            Inputfield(
-              isreadOnly: false,
-              inputHintText: "Enter Event Title",
-              inputTitle: "Event Title",
-              textObscure: false,
-              textController: eventTitle,
-              validator: (eventTitle) =>
-                  eventTitle == null || eventTitle.isEmpty
-                      ? 'Event Title is required'
-                      : null,
+            _buildInputField(
+              title: "Event Title",
+              hintText: "Enter Event Title",
+              controller: eventTitle,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Event Title is required'
+                  : null,
             ),
-            Inputfield(
-              isreadOnly: false,
-              inputHintText: "1600 Amphitheatre Parkway, Mountain View, CA",
-              inputTitle: "Event Address",
-              textObscure: false,
-              textController: eventAddress,
+            _buildInputField(
+              title: "Event Address",
+              hintText: "1600 Amphitheatre Parkway, Mountain View, CA",
+              controller: eventAddress,
               validator: (value) =>
                   value == null || value.isEmpty ? 'Address is required' : null,
             ),
-            Inputfield(
-              isreadOnly: false,
-              inputHintText: "e.g New-York",
-              inputTitle: "City",
-              textObscure: false,
-              textController: eventLocation,
+            _buildInputField(
+              title: "Location",
+              hintText: "Event Location",
+              controller: eventLocation,
               validator: (value) => value == null || value.isEmpty
                   ? 'Location is required'
                   : null,
             ),
-            // Event Category
             InputDropDown(
-              options: categories,
+              options: africanCountries,
               onOptionSelected: (value) => setState(() {
-                selectedCategory = value;
+                selectedAfricanCountry = value;
               }),
-              inputTitle: 'Event Category',
+              inputTitle: 'Event Theme',
             ),
-
-            // Event Description
             InputFieldLarge(
               inputHintText: "Enter Event Description",
               inputTitle: "Description",
               textController: eventDescription,
             ),
-
-            // Event Price
             Row(
               children: [
                 Expanded(
-                    child: Inputfield(
-                  isreadOnly: false,
-                  inputHintText: "Enter Event Price",
-                  inputTitle: "Price (\$)",
-                  textObscure: false,
-                  textController: eventPrice,
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Event Price is required'
-                      : null,
-                )),
-                const SizedBox(
-                  width: 12,
+                  child: _buildInputField(
+                    title: "Price (\$)",
+                    hintText: "Enter Event Price",
+                    controller: eventPrice,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Event Price is required'
+                        : null,
+                  ),
                 ),
+                const SizedBox(width: 12),
                 Expanded(
-                    child: Inputfield(
-                  isreadOnly: false,
-                  inputHintText: "Total Number of Tickets",
-                  inputTitle: "Total Unit",
-                  textObscure: false,
-                  textController: eventPrice,
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Event Price is required'
-                      : null,
-                ))
+                  child: _buildInputField(
+                    title: "Total Unit",
+                    hintText: "Total Number of Tickets",
+                    controller: eventUnit,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Event Unit is required'
+                        : null,
+                  ),
+                )
               ],
             ),
-
-            // Event Date and Time
             Row(
               children: [
                 Expanded(
-                    child: Inputfield(
-                  isreadOnly: true,
-                  inputHintText:
-                      "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}",
-                  inputTitle: "Date of the Event",
-                  textObscure: false,
-                  textController: eventDate,
-                  icon: IconButton(
-                    onPressed: () async {
-                      final pickedDate = await showDatePicker(
+                  child: _buildInputField(
+                    title: "Date of the Event",
+                    hintText: "YYYY-MM-DD",
+                    controller: eventDate,
+                    isReadOnly: true,
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        final pickedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
-                          builder: (BuildContext context, Widget? child) {
-                            return Theme(
-                              data: ThemeData.light().copyWith(
-                                colorScheme: ColorScheme.light(
-                                  primary: accentColor,
-                                  onPrimary: Colors.white,
-                                ),
-                                dialogBackgroundColor: Colors.white,
-                              ),
-                              child: child!,
-                            );
-                          });
-                      if (pickedDate != null) {
-                        eventDate.text =
-                            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                      }
-                    },
-                    icon: Icon(Icons.calendar_today, color: greyColor),
+                        );
+                        if (pickedDate != null) {
+                          eventDate.text =
+                              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                        }
+                      },
+                      icon: Icon(Icons.calendar_today, color: greyColor),
+                    ),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Event Date is required'
+                        : null,
                   ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Event Date is required'
-                      : null,
-                )),
-                const SizedBox(
-                  width: 12,
                 ),
+                const SizedBox(width: 12),
                 Expanded(
-                    child: Inputfield(
-                  isreadOnly: true,
-                  inputHintText:
-                      "${DateTime.now().hour.toString()}:${DateTime.now().minute.toString().padLeft(2, '0')}",
-                  inputTitle: "Time (24 Hour Clock)",
-                  textObscure: false,
-                  textController: eventTime,
-                  icon: IconButton(
-                    onPressed: () => selectTime(context),
-                    icon: Icon(Icons.access_time, color: greyColor),
+                  child: _buildInputField(
+                    title: "Time (24 Hour Clock)",
+                    hintText: "HH:MM",
+                    controller: eventTime,
+                    isReadOnly: true,
+                    suffixIcon: IconButton(
+                      onPressed: () => _selectTime(context),
+                      icon: Icon(Icons.access_time, color: greyColor),
+                    ),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Event Time is required'
+                        : null,
                   ),
-                  validator: (eventTime) =>
-                      eventTime == null || eventTime.isEmpty
-                          ? 'Event Time is required'
-                          : null,
-                ))
+                ),
               ],
             ),
-
-            // Submit Button
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: InkWell(

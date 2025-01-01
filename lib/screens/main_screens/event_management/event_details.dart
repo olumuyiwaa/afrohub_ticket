@@ -1,29 +1,78 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../api/api_get.dart';
 import '../../../utilities/const.dart';
 import '../event/event_chat.dart';
 import 'edit_event.dart';
 
-class EventDetails extends StatelessWidget {
-  final int eventID;
-  EventDetails({super.key, required this.eventID});
+class EventDetails extends StatefulWidget {
+  final String eventID;
+  const EventDetails({super.key, required this.eventID});
+
+  @override
+  State<EventDetails> createState() => _EventDetailsState();
+}
+
+class _EventDetailsState extends State<EventDetails> {
+  String eventTitle = "";
+
+  String eventDescription = "";
+
+  String eventLocation = "";
+
+  String eventAddress = "";
+
+  String eventImage = "";
+
+  String eventDate = "";
+
+  int eventStockLeft = 0;
+
+  String eventPrice = "";
+
+  String eventCategory = "";
+
+  bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch posts and members when the widget is initialized
+    _fetchEventDetails();
+    // Reload the page after 1 seconds
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {});
+    });
+  }
+
+  Future<void> _fetchEventDetails() async {
+    try {
+      final eventDetails = await getEventDetails(widget.eventID);
+      setState(() {
+        eventTitle = eventDetails.title;
+        eventDescription = eventDetails.description;
+        eventLocation = eventDetails.location;
+        eventAddress = eventDetails.address;
+        eventImage = eventDetails.image ?? "";
+        eventDate = eventDetails.date;
+        eventStockLeft = eventDetails.unit;
+
+        eventPrice =
+            (eventDetails.price == "free" || eventDetails.price == "Free")
+                ? "0"
+                : eventDetails.price;
+        eventCategory = eventDetails.category;
+      });
+    } catch (error) {
+      // Handle any errors
+    }
+  }
 
   final Map<dynamic, dynamic> event = {
-    "title": "Concert in the Park",
-    "image":
-        "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg",
-    "date": "24/12/2024",
-    "time": "16:00",
-    "location": "Tallinn",
-    "category": "Photography",
-    "address": "123 Main Street, Tallinn, Estonia",
-    "latitude": 59.4370,
-    "longitude": 24.7536,
-    "price": 25.00,
-    "description":
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    "stockLeft": 100,
     "totalTicketsSold": 120,
     "buyerDetails": [
       {
@@ -40,12 +89,31 @@ class EventDetails extends StatelessWidget {
       },
     ]
   };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) => [
         SliverAppBar(
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: greyColor,
+              ),
+            ),
+          ),
           actions: [
             InkWell(
               onTap: () {},
@@ -98,13 +166,11 @@ class EventDetails extends StatelessWidget {
             decoration: BoxDecoration(
               color: greyColor, // Fallback color
               image: DecorationImage(
-                image: NetworkImage(
-                  event["image"],
-                ),
+                image: _getImageProvider(eventImage), // Dynamic image provider
                 fit: BoxFit.cover, // Adjust the image fit
               ),
             ),
-            child: const SizedBox.shrink(), // Keeps the container content empty
+            child: const SizedBox.shrink(),
           )),
         )
       ],
@@ -129,9 +195,8 @@ class EventDetails extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (BuildContext context) => EventChat(
                                 eventID: 1,
-                                eventName: event["title"],
-                                eventPicture:
-                                    "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
+                                eventName: eventTitle,
+                                eventPicture: eventImage)));
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
@@ -168,10 +233,44 @@ class EventDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            event["title"],
+            eventTitle,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Address",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                eventAddress,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Description",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                eventDescription,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -183,7 +282,7 @@ class EventDetails extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    event["category"],
+                    eventCategory,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -197,7 +296,7 @@ class EventDetails extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    event["date"],
+                    eventDate,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -217,7 +316,7 @@ class EventDetails extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    event["location"],
+                    eventLocation,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -231,7 +330,7 @@ class EventDetails extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    "\$ ${event["price"]}",
+                    "\$ $eventPrice",
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -247,11 +346,11 @@ class EventDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Total Tickets Sold",
+                    "Total Sold / Remaining",
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    event["totalTicketsSold"].toString(),
+                    "${event["totalTicketsSold"]} / $eventStockLeft",
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -265,7 +364,7 @@ class EventDetails extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
-                    "\$ ${(event["price"] * event["totalTicketsSold"]).toStringAsFixed(2)}",
+                    "\$ ${(double.tryParse(eventPrice) ?? 0.0 * event["totalTicketsSold"]).toStringAsFixed(2)}",
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -304,7 +403,7 @@ class EventDetails extends StatelessWidget {
                   title: Text(buyer["name"]),
                   subtitle: Text("Tickets Bought: ${buyer["unit"]}"),
                   trailing: Text(
-                      "\$${(event["price"] * buyer["unit"]).toStringAsFixed(2)}"),
+                      "\$${(double.tryParse(eventPrice) ?? 0.0 * buyer["unit"]).toStringAsFixed(2)}"),
                 );
               },
             ),
@@ -312,5 +411,21 @@ class EventDetails extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+ImageProvider _getImageProvider(String image) {
+  if (image.startsWith('http')) {
+    // If the image is a URL
+    return NetworkImage(image);
+  } else {
+    try {
+      // Try decoding the Base64 string
+      final Uint8List decodedBytes = base64Decode(image);
+      return MemoryImage(decodedBytes);
+    } catch (e) {
+      // Return a fallback image in case of error
+      return const AssetImage('assets/images/fallback.png');
+    }
   }
 }

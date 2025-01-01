@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:afrohub/screens/main_screens/event/event_chat.dart';
 import 'package:afrohub/utilities/const.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +28,14 @@ class _EventPageState extends State<EventPage> {
   String eventTitle = "";
   String eventDescription = "";
   String eventLocation = "";
+  String eventAddress = "";
   String eventImage = "";
   String eventDate = "";
   int eventStockLeft = 0;
   String eventPrice = "";
   String eventCategory = "";
-  double eventLatitude = 59.4370;
-  double eventLongitude = 24.7536;
+  double eventLatitude = 40.7128;
+  double eventLongitude = 74.0060;
   bool isBookmarked = false;
 
   @override
@@ -52,9 +56,13 @@ class _EventPageState extends State<EventPage> {
         eventTitle = eventDetails.title;
         eventDescription = eventDetails.description;
         eventLocation = eventDetails.location;
+        eventAddress = eventDetails.address;
         eventImage = eventDetails.image ?? "";
         eventDate = eventDetails.date;
         eventStockLeft = eventDetails.unit;
+        eventLatitude = eventDetails.latitude!;
+        eventLongitude = eventDetails.longitude!;
+
         eventPrice =
             (eventDetails.price == "free" || eventDetails.price == "Free")
                 ? "0"
@@ -180,9 +188,8 @@ class _EventPageState extends State<EventPage> {
                     decoration: BoxDecoration(
                       color: greyColor, // Fallback color
                       image: DecorationImage(
-                        image: NetworkImage(
-                          eventImage,
-                        ),
+                        image: _getImageProvider(
+                            eventImage), // Dynamic image provider
                         fit: BoxFit.cover, // Adjust the image fit
                       ),
                     ),
@@ -229,7 +236,6 @@ class _EventPageState extends State<EventPage> {
                         ),
                         Container(
                           padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
                           height: 52,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
@@ -253,6 +259,18 @@ class _EventPageState extends State<EventPage> {
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        const Text(
+                          "Address",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Text(eventAddress),
                         const SizedBox(
                           height: 8,
                         ),
@@ -296,8 +314,8 @@ class _EventPageState extends State<EventPage> {
                                       flutter_map.Marker(
                                         width: 80.0,
                                         height: 80.0,
-                                        point: LatLng(event["latitude"],
-                                            event["longitude"]),
+                                        point: LatLng(
+                                            eventLatitude, eventLongitude),
                                         child: const Icon(
                                           Icons.location_pin,
                                           color: Colors.red,
@@ -373,8 +391,7 @@ class _EventPageState extends State<EventPage> {
                                             EventChat(
                                                 eventID: 1,
                                                 eventName: eventTitle,
-                                                eventPicture:
-                                                    "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
+                                                eventPicture: eventImage)));
                               },
                               borderRadius: BorderRadius.circular(8),
                               child: Container(
@@ -467,5 +484,21 @@ class _EventPageState extends State<EventPage> {
               ),
             ),
     );
+  }
+}
+
+ImageProvider _getImageProvider(String image) {
+  if (image.startsWith('http')) {
+    // If the image is a URL
+    return NetworkImage(image);
+  } else {
+    try {
+      // Try decoding the Base64 string
+      final Uint8List decodedBytes = base64Decode(image);
+      return MemoryImage(decodedBytes);
+    } catch (e) {
+      // Return a fallback image in case of error
+      return const AssetImage('assets/images/fallback.png');
+    }
   }
 }

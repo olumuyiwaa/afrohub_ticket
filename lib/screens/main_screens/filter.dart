@@ -42,21 +42,67 @@ class _FilterState extends State<Filter> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        final allCategories = [
-          'All',
-          "Swimming",
-          "Sport",
-          "Game",
-          "Football",
-          "Comedy",
-          "Concert",
-          "Trophy",
-          "Tour",
-          "Festival",
-          "Study",
-          "Party",
-          "Olympic",
-          "Culture"
+        final List<String> africanCountries = [
+          "All",
+          "All Africa",
+          "Western Africa",
+          "Eastern Africa",
+          "Northern Africa",
+          "Southern Africa",
+          "Algeria",
+          "Angola",
+          "Benin",
+          "Botswana",
+          "Burkina Faso",
+          "Burundi",
+          "Cabo Verde",
+          "Cameroon",
+          "Central African Republic",
+          "Chad",
+          "Comoros",
+          "Congo",
+          "Congo (DRC)",
+          "Djibouti",
+          "Egypt",
+          "Equatorial Guinea",
+          "Eritrea",
+          "Eswatini",
+          "Ethiopia",
+          "Gabon",
+          "Gambia",
+          "Ghana",
+          "Guinea",
+          "Guinea-Bissau",
+          "Ivory Coast",
+          "Kenya",
+          "Lesotho",
+          "Liberia",
+          "Libya",
+          "Madagascar",
+          "Malawi",
+          "Mali",
+          "Mauritania",
+          "Mauritius",
+          "Morocco",
+          "Mozambique",
+          "Namibia",
+          "Niger",
+          "Nigeria",
+          "Rwanda",
+          "Sao Tome and Principe",
+          "Senegal",
+          "Seychelles",
+          "Sierra Leone",
+          "Somalia",
+          "South Africa",
+          "South Sudan",
+          "Sudan",
+          "Tanzania",
+          "Togo",
+          "Tunisia",
+          "Uganda",
+          "Zambia",
+          "Zimbabwe"
         ];
 
         return StatefulBuilder(
@@ -70,32 +116,57 @@ class _FilterState extends State<Filter> {
                     'Filter by Category',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   Expanded(
-                    child: ListView(
-                      children: allCategories.map((category) {
-                        return CheckboxListTile(
-                          title: Text(category),
-                          activeColor: accentColor,
-                          value: selectedCategories.contains(category),
-                          onChanged: (bool? value) {
-                            setModalState(() {
-                              if (value == true) {
-                                if (category == 'All') {
-                                  selectedCategories = ['All'];
-                                } else {
-                                  selectedCategories.remove('All');
-                                  selectedCategories.add(category);
-                                }
-                              } else {
-                                selectedCategories.remove(category);
-                                if (selectedCategories.isEmpty) {
-                                  selectedCategories.add('All');
-                                }
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
+                    child: Scrollbar(
+                      thumbVisibility: true, // Ensures the scrollbar is visible
+                      child: ListView.builder(
+                        itemCount: (africanCountries.length / 2)
+                            .ceil(), // Number of rows
+                        itemBuilder: (context, rowIndex) {
+                          // Get countries for the current row
+                          final rowItems = africanCountries
+                              .skip(rowIndex * 2)
+                              .take(2)
+                              .toList();
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: rowItems.map((country) {
+                              return Expanded(
+                                child: CheckboxListTile(
+                                  title: Text(
+                                    country,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  activeColor: accentColor,
+                                  value: selectedCategories.contains(country),
+                                  onChanged: (bool? value) {
+                                    setModalState(() {
+                                      if (value == true) {
+                                        if (country == 'All') {
+                                          selectedCategories = ['All'];
+                                        } else {
+                                          selectedCategories.remove('All');
+                                          selectedCategories.add(country);
+                                        }
+                                      } else {
+                                        selectedCategories.remove(country);
+                                        if (selectedCategories.isEmpty) {
+                                          selectedCategories.add('All');
+                                        }
+                                      }
+                                    });
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Padding(
@@ -128,7 +199,10 @@ class _FilterState extends State<Filter> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Event Filter'),
+        title: const Text(
+          'Event Filter',
+          style: TextStyle(fontSize: 18),
+        ),
         actions: [
           InkWell(
             onTap: openFilterOptions,

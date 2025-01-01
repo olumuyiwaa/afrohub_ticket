@@ -20,18 +20,65 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final List<dynamic> categories = [
-    "swimming",
-    "game",
-    "football",
-    "comedy",
-    "concert",
-    "trophy",
-    "tour",
-    "festival",
-    "study",
-    "party",
-    "olympic",
-    "culture"
+    "All Africa",
+    "Western Africa",
+    "Eastern Africa",
+    "Northern Africa",
+    "Southern Africa",
+    "Algeria",
+    "Angola",
+    "Benin",
+    "Botswana",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cameroon",
+    "Central African Republic",
+    "Chad",
+    "Comoros",
+    "Congo",
+    "Congo (DRC)",
+    "Djibouti",
+    "Egypt",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Eswatini",
+    "Ethiopia",
+    "Gabon",
+    "Gambia",
+    "Ghana",
+    "Guinea",
+    "Guinea-Bissau",
+    "Ivory Coast",
+    "Kenya",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Madagascar",
+    "Malawi",
+    "Mali",
+    "Mauritania",
+    "Mauritius",
+    "Morocco",
+    "Mozambique",
+    "Namibia",
+    "Niger",
+    "Nigeria",
+    "Rwanda",
+    "Sao Tome and Principe",
+    "Senegal",
+    "Seychelles",
+    "Sierra Leone",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Sudan",
+    "Tanzania",
+    "Togo",
+    "Tunisia",
+    "Uganda",
+    "Zambia",
+    "Zimbabwe"
   ];
 
   final fullName = TextEditingController();
@@ -193,7 +240,7 @@ class _EditProfileState extends State<EditProfile> {
                             crossAxisCount: 3,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
-                            mainAxisExtent: 120,
+                            mainAxisExtent: 40,
                           ),
                           itemCount: categories.length,
                           itemBuilder: (context, index) {
@@ -208,46 +255,24 @@ class _EditProfileState extends State<EditProfile> {
                                 });
                               },
                               child: Container(
-                                alignment: Alignment.bottomCenter,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 decoration: BoxDecoration(
                                   color: isSelected ? accentColor : greyColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: isSelected ? accentColor : greyColor,
-                                    width: 2,
-                                  ),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Image.asset(
-                                      "assets/img/$interest.png",
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.contain,
+                                child: Center(
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    interest[0].toUpperCase() +
+                                        interest.substring(1),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isSelected
+                                          ? Colors.black
+                                          : Colors.white,
                                     ),
-                                    Container(
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          interest[0].toUpperCase() +
-                                              interest.substring(1),
-                                          style: TextStyle(
-                                            color: isSelected
-                                                ? accentColor
-                                                : greyColor,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             );

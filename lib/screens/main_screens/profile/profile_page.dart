@@ -43,12 +43,12 @@ class _ProfilePageState extends State<ProfilePage> {
   final Map<dynamic, dynamic> user = {
     "image": "",
     "interests": [
-      "football",
-      "comedy",
-      "concert",
-      "trophy",
-      "tour",
-      "festival",
+      "All Africa",
+      "Western Africa",
+      "Nigeria",
+      "Ghana",
+      "South Africa",
+      "Egypt",
     ],
   };
 
@@ -213,44 +213,37 @@ class _ProfilePageState extends State<ProfilePage> {
                                 crossAxisCount: 3,
                                 crossAxisSpacing: 8,
                                 mainAxisSpacing: 8,
-                                mainAxisExtent: 36,
+                                mainAxisExtent: 40,
                               ),
                               itemCount: user["interests"].length,
                               itemBuilder: (context, index) {
                                 final interest = user["interests"][index];
 
                                 return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: accentColor,
-                                      width: 2,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: accentColor,
+                                        width: 2,
+                                      ),
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/img/$interest.png", // Corrected asset path
-                                        width: 20,
-                                      ),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      Text(
+                                    child: Center(
+                                      child: Text(
+                                        textAlign: TextAlign.center,
                                         interest[0].toUpperCase() +
                                             interest.substring(
                                                 1), // Correct capitalization
                                         style: TextStyle(
-                                          fontSize: 13,
+                                          overflow: TextOverflow.ellipsis,
+                                          fontSize: 12,
                                           color: accentColor,
                                           fontWeight: FontWeight.w500,
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                );
+                                      ),
+                                    ));
                               },
                             )),
                           )

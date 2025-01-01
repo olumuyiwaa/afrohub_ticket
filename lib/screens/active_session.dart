@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../utilities/const.dart';
+import 'main_screens/african_countries/african_countries.dart';
 import 'main_screens/bookmarks.dart';
 import 'main_screens/home_page.dart';
 import 'main_screens/map_screen.dart';
 import 'main_screens/profile/profile_page.dart';
-import 'main_screens/tickets/tickets.dart';
 
 class ActiveSession extends StatefulWidget {
   final int pageIndex;
@@ -48,7 +48,7 @@ class _ActiveSessionState extends State<ActiveSession> {
       const HomePage(),
       const Bookmarks(),
       const MapScreen(),
-      Tickets(),
+      AfricanCountriesPage(),
       const ProfilePage(),
     ];
 
@@ -76,7 +76,7 @@ class _ActiveSessionState extends State<ActiveSession> {
           _buildBottomNavItem('svg/home2.svg', 'Home', 0),
           _buildBottomNavItem('svg/hearth.svg', 'Bookmarks', 1),
           _buildBottomNavItem('svg/map.svg', 'Map', 2),
-          _buildBottomNavItem('svg/ticket.svg', 'Tickets', 3),
+          _buildBottomNavItem('svg/africa.svg', 'Afro-Wiki', 3),
           _buildBottomNavItem('svg/profile.svg', 'Profile', 4),
         ],
       ),
@@ -95,52 +95,4 @@ class _ActiveSessionState extends State<ActiveSession> {
       label: label, // Dynamic label
     );
   }
-
-  // Widget _buildBottomBar() {
-  //   return ConvexAppBar(
-  //     items: [
-  //       TabItem(
-  //           icon: getSvg("home.svg", height: 24.h, width: 24.h),
-  //           activeIcon: getSvg("home2.svg",
-  //               height: 24.h, width: 24.h, color: accentColor)),
-  //       TabItem(
-  //           icon: getSvg(
-  //             "bookmark.svg",
-  //             height: 24.h,
-  //             width: 24.h,
-  //           ),
-  //           activeIcon: getSvg("bookmark2.svg",
-  //               height: 24.h, width: 24.h, color: accentColor)),
-  //       TabItem(
-  //           icon: Padding(
-  //             padding: const EdgeInsets.all(15.0),
-  //             child: getSvg("map.svg",
-  //                 height: 24.h, width: 24.h, color: Colors.white),
-  //           ),
-  //           activeIcon: Padding(
-  //             padding: const EdgeInsets.all(15.0),
-  //             child: getSvg("map2.svg",
-  //                 height: 24.h, width: 24.h, color: Colors.white),
-  //           )),
-  //       TabItem(
-  //           icon: getSvg("ticket.svg", height: 24.h, width: 24.h),
-  //           activeIcon: getSvg("ticket2.svg",
-  //               height: 24.h, width: 24.h, color: accentColor)),
-  //       TabItem(
-  //           icon: getSvg("profile.svg", height: 24.h, width: 24.h),
-  //           activeIcon: getSvg("profile2.svg",
-  //               height: 24.h, width: 24.h, color: accentColor))
-  //     ],
-  //     height: 70.h,
-  //     elevation: 5,
-  //     color: accentColor,
-  //     top: -58.h,
-  //     curveSize: 40.h,
-  //     activeColor: accentColor,
-  //     style: TabStyle.fixedCircle,
-  //     backgroundColor: Colors.white,
-  //     initialActiveIndex: _pageIndex,
-  //     onTap: _bottomNavTapped,
-  //   );
-  // }
 }

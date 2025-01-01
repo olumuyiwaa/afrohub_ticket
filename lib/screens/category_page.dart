@@ -6,7 +6,7 @@ import '../../model/events.dart';
 import '../../utilities/buttons/notification_button.dart';
 import '../../utilities/const.dart';
 import '../../utilities/widget/event_card_2.dart';
-import 'event/event_page.dart';
+import 'main_screens/event/event_page.dart';
 
 class CategoryPage extends StatefulWidget {
   final String title;

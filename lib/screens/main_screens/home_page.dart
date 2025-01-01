@@ -10,7 +10,6 @@ import '../../utilities/const.dart';
 import '../../utilities/search.dart';
 import '../../utilities/widget/event_card_2.dart';
 import '../../utilities/widget/upcoming_events.dart';
-import 'category_page.dart';
 import 'event/event_page.dart';
 import 'event_management/create_event.dart';
 import 'filter.dart';
@@ -168,71 +167,6 @@ class _HomePageState extends State<HomePage> {
           height: 12,
         ),
         const UpcomingEvents(),
-        const SizedBox(
-          height: 16,
-        ),
-        const Text(
-          "View By Category",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(
-          height: 12,
-        ),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            mainAxisExtent: 36,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-
-            return InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => CategoryPage(
-                                title: category,
-                              )));
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: accentColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        "assets/img/$category.png", // Corrected asset path
-                        width: 20,
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        category[0].toUpperCase() +
-                            category.substring(1), // Correct capitalization
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: accentColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    ],
-                  ),
-                ));
-          },
-        ),
         const SizedBox(
           height: 16,
         ),

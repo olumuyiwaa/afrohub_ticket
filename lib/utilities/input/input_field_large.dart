@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../const.dart';
+
 class InputFieldLarge extends StatelessWidget {
   final String inputHintText;
   final String inputTitle;
@@ -35,7 +37,7 @@ class InputFieldLarge extends StatelessWidget {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               ),
               TextField(
-                cursorColor: Colors.green,
+                cursorColor: accentColor,
                 maxLines: null,
                 minLines: 5,
                 keyboardType: TextInputType.multiline,
