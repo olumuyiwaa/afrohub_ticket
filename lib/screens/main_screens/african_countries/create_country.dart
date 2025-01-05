@@ -270,23 +270,39 @@ class _CreateCountryState extends State<CreateCountry> {
             const SizedBox(height: 20),
             InputDropDown(
               options: africanCountries,
-              onOptionSelected: (value) => setState(() {
-                selectedAfricanCountry = value;
-              }),
+              onOptionSelected: (value) {
+                setState(() {
+                  selectedAfricanCountry = value;
+                });
+              },
               inputTitle: 'Country Name',
+              validator: (value) {
+                if (selectedAfricanCountry == null ||
+                    selectedAfricanCountry == "" ||
+                    selectedAfricanCountry == "Select Country") {
+                  return 'Please select a valid country';
+                }
+                return null;
+              },
             ),
-            _buildInputField(
-              title: "President",
-              hintText: "President",
-              controller: countryPresident,
-              validator: (value) => value == null || value.isEmpty
-                  ? 'Country President is required'
-                  : null,
+            Inputfield(
+              inputHintText: "John Doe",
+              inputTitle: "President",
+              textObscure: false,
+              textController: countryPresident,
+              isreadOnly: false,
+              validator: (countryPresident) =>
+                  countryPresident == null || countryPresident.isEmpty
+                      ? 'Country President Name is Required'
+                      : null,
             ),
             InputFieldLarge(
               inputHintText: "Enter Event Description",
               inputTitle: "Description",
               textController: countryDescription,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Country Description is Required'
+                  : null,
             ),
             Row(
               children: [

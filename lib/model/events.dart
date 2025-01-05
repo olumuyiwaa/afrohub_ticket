@@ -6,6 +6,7 @@ class Event {
   final String address;
   final String description;
   final String date;
+  final String time;
   final String price;
   final String category;
   final double? longitude;
@@ -22,6 +23,7 @@ class Event {
     required this.address,
     required this.description,
     required this.date,
+    required this.time,
     required this.price,
     required this.category,
     required this.unit,
@@ -38,6 +40,7 @@ class Event {
       address: json['address'] ?? "No Address",
       description: json['description'] ?? "No Description",
       date: json['date'] ?? "No Date",
+      time: json['time'] ?? "No time",
       price: json['price'],
       category: json['category'],
       unit: json['unit'] ?? 0,

@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:afrohub/utilities/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,12 +31,16 @@ class _CountryPageState extends State<CountryPage> {
   String countryCapital = "";
   String countryCurrency = "";
   String countryImage = "";
-  double countryLatitude = 40.7128;
-  double countryLongitude = 74.0060;
+  double? countryLatitude;
+  double? countryLongitude;
   String countryDemonym = "";
   String countryLanguage = "";
   String countryTimeZone = "";
   String tutorialLink = "";
+  String associationLeaderName = "";
+  String associationLeaderEmail = "";
+  String associationLeaderPhone = "";
+  String associationLeaderPhoto = "";
 
   List<Event> events = [];
   List<Event> allEvents = [];
@@ -59,6 +62,10 @@ class _CountryPageState extends State<CountryPage> {
         countryLanguage = countryDetails.language;
         countryTimeZone = countryDetails.timeZone;
         tutorialLink = countryDetails.link;
+        associationLeaderName = countryDetails.associationLeaderName;
+        associationLeaderEmail = countryDetails.associationLeaderEmail;
+        associationLeaderPhone = countryDetails.associationLeaderPhone;
+        associationLeaderPhoto = countryDetails.associationLeaderPhoto;
       });
     } catch (error) {
       // Handle any errors
@@ -109,10 +116,10 @@ class _CountryPageState extends State<CountryPage> {
   // Function to launch Google Maps or Apple Maps
   Future<void> openMap() async {
     String googleMapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=${country["latitude"]},${country["longitude"]}";
+        "https://www.google.com/maps/search/?api=1&query=$countryLatitude,$countryLongitude";
 
     String appleMapsUrl =
-        "http://maps.apple.com/?ll=${country["latitude"]},${country["longitude"]}";
+        "http://maps.apple.com/?ll=$countryLatitude,$countryLongitude";
 
     // Use canLaunchUrl and launchUrl to open the maps
     if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
@@ -123,23 +130,6 @@ class _CountryPageState extends State<CountryPage> {
       throw "Could not open the map.";
     }
   }
-
-  final Map<dynamic, dynamic> country = {
-    "title": "Concert in the Park",
-    "image":
-        "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg",
-    "date": "24/12/2024",
-    "time": "16:00",
-    "location": "Tallinn",
-    "category": "Sport",
-    "address": "123 Main Street, Tallinn, Estonia",
-    "latitude": 59.4370,
-    "longitude": 24.7536,
-    "price": 25.00,
-    "description": "",
-    "stockLeft": 100,
-    "isBookmarked": false
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +172,7 @@ class _CountryPageState extends State<CountryPage> {
                       },
                       borderRadius: BorderRadius.circular(32),
                       child: Container(
+                        margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -193,32 +184,32 @@ class _CountryPageState extends State<CountryPage> {
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (BuildContext context) =>
-                        //             CountryChat(
-                        //                 countryID: 1,
-                        //                 countryName: countryTitle,
-                        //                 countryPicture:
-                        //                     "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/svg/message.svg',
-                          color: accentColor,
-                        ),
-                      ),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext context) =>
+                    //             CountryChat(
+                    //                 countryID: 1,
+                    //                 countryName: countryTitle,
+                    //                 countryPicture:
+                    //                     "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
+                    //   },
+                    //   borderRadius: BorderRadius.circular(8),
+                    //   child: Container(
+                    //     margin: const EdgeInsets.all(8),
+                    //     padding: const EdgeInsets.all(8),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       borderRadius: BorderRadius.circular(32),
+                    //     ),
+                    //     child: SvgPicture.asset(
+                    //       'assets/svg/message.svg',
+                    //       color: accentColor,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                   expandedHeight: 320,
                   floating: false,
@@ -408,9 +399,9 @@ class _CountryPageState extends State<CountryPage> {
                               height: 280,
                               child: flutter_map.FlutterMap(
                                 options: flutter_map.MapOptions(
-                                    initialCenter: LatLng(countryLatitude,
-                                        countryLongitude), // San Francisco
-                                    initialZoom: 8),
+                                    initialCenter: LatLng(countryLatitude!,
+                                        countryLongitude!), // San Francisco
+                                    initialZoom: 5.4),
                                 children: [
                                   flutter_map.TileLayer(
                                     urlTemplate:
@@ -562,7 +553,9 @@ class _CountryPageState extends State<CountryPage> {
                           children: [
                             Expanded(
                                 child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                launchUrl(Uri.parse(tutorialLink));
+                              },
                               child: const ButtonBig(
                                 isdark: false,
                                 buttonText: "Learn Cuisines",
@@ -575,7 +568,120 @@ class _CountryPageState extends State<CountryPage> {
                             const SizedBox(width: 8),
                             Expanded(
                                 child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                  ),
+                                  builder: (BuildContext context) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "Association Leader",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Expanded(
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: greyColor, // Fallback color
+                                            image: DecorationImage(
+                                              image: _getImageProvider(
+                                                  associationLeaderPhoto),
+                                              fit: BoxFit
+                                                  .cover, // Adjust the image fit
+                                            ),
+                                          ))),
+                                          const SizedBox(height: 12),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Row(
+                                                children: [
+                                                  const SizedBox(
+                                                      width: 54,
+                                                      child: Text(
+                                                        "Name:",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(associationLeaderName)
+                                                ],
+                                              )),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Row(
+                                                children: [
+                                                  const SizedBox(
+                                                      width: 54,
+                                                      child: Text(
+                                                        "Email:",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(associationLeaderEmail)
+                                                ],
+                                              )),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
+                                              child: Row(
+                                                children: [
+                                                  const SizedBox(
+                                                      width: 54,
+                                                      child: Text(
+                                                        "Phone:",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 12,
+                                                  ),
+                                                  Text(associationLeaderPhone)
+                                                ],
+                                              )),
+                                          const SizedBox(height: 16),
+                                          InkWell(
+                                              onTap: () {
+                                                Navigator.pop(
+                                                    context); // Close the modal
+                                              },
+                                              child: const ButtonBig(
+                                                buttonText: "Close",
+                                              )),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                               child: const ButtonBig(
                                 buttonText: "Association Leader",
                                 icon: Icon(

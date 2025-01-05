@@ -8,8 +8,8 @@ class Country {
   final String currency;
   final String population;
   final String demonym;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final String description;
   final String language;
   final String timeZone;
@@ -30,8 +30,8 @@ class Country {
     required this.currency,
     required this.population,
     required this.demonym,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
     required this.description,
     required this.language,
     required this.timeZone,

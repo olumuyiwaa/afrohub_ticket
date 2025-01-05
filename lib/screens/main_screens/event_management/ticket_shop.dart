@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import '../../../api/api_get.dart';
 import '../../../model/events.dart';
 import '../../../utilities/buttons/button_big.dart';
+import '../../../utilities/const.dart';
 import 'create_event.dart';
 import 'event_details.dart';
 
@@ -170,9 +171,20 @@ class _TicketShopState extends State<TicketShop> {
                                         "\$ ${_events[index].price}",
                                         style: const TextStyle(fontSize: 12),
                                       ),
-                                      Text(
-                                        _events[index].category,
-                                        style: const TextStyle(fontSize: 12),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.theater_comedy_sharp,
+                                            size: 18,
+                                            color: greyColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            _events[index].category,
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),

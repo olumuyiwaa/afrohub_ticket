@@ -6,12 +6,14 @@ class InputFieldLarge extends StatelessWidget {
   final String inputHintText;
   final String inputTitle;
   final TextEditingController textController;
+  final FormFieldValidator<String>? validator;
 
   const InputFieldLarge({
     super.key,
     required this.inputHintText,
     required this.inputTitle,
     required this.textController,
+    this.validator,
   });
 
   @override
@@ -36,12 +38,13 @@ class InputFieldLarge extends StatelessWidget {
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               ),
-              TextField(
+              TextFormField(
                 cursorColor: accentColor,
                 maxLines: null,
                 minLines: 5,
                 keyboardType: TextInputType.multiline,
                 controller: textController,
+                validator: validator,
                 decoration: InputDecoration(
                   hintText: inputHintText,
                   hintStyle: const TextStyle(

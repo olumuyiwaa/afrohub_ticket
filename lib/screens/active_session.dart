@@ -48,7 +48,7 @@ class _ActiveSessionState extends State<ActiveSession> {
       const HomePage(),
       const Bookmarks(),
       const MapScreen(),
-      AfricanCountriesPage(),
+      const AfricanCountriesPage(),
       const ProfilePage(),
     ];
 

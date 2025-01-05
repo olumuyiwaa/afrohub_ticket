@@ -8,10 +8,13 @@ import 'package:flutter_map/flutter_map.dart' as flutter_map;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../utilities/buttons/button_big.dart';
+import '../../../api/api_delete.dart';
 import '../../../api/api_get.dart';
+import '../../../api/api_post.dart';
 import '../../../utilities/widget/upcoming_events.dart';
 import 'payment_screen.dart';
 
@@ -34,19 +37,50 @@ class _EventPageState extends State<EventPage> {
   int eventStockLeft = 0;
   String eventPrice = "";
   String eventCategory = "";
-  double eventLatitude = 40.7128;
-  double eventLongitude = 74.0060;
+  double eventLatitude = 0;
+  double eventLongitude = 0;
+  String eventTime = "";
   bool isBookmarked = false;
-
+  String? userID;
   @override
   void initState() {
     super.initState();
-    // Fetch posts and members when the widget is initialized
+    getUserInfo().then((_) {
+      _initializeBookmarkStatus();
+    });
     _fetchEventDetails();
-    // Reload the page after 1 seconds
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {});
     });
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userID = prefs.getString('id');
+    });
+  }
+
+  void _initializeBookmarkStatus() async {
+    try {
+      bool bookmarked = await isEventBookmarked(widget.eventId);
+      setState(() {
+        isBookmarked = bookmarked;
+      });
+    } catch (e) {
+      setState(() {
+        isBookmarked = false;
+      });
+    }
+  }
+
+  Future<bool> isEventBookmarked(String eventId) async {
+    try {
+      final bookmarkedEvents = await getBookmarkedEvents("$userID");
+      return bookmarkedEvents.any((event) => event.id == eventId);
+    } catch (e) {
+      return false; // Default to false if an error occurs
+    }
   }
 
   Future<void> _fetchEventDetails() async {
@@ -62,6 +96,7 @@ class _EventPageState extends State<EventPage> {
         eventStockLeft = eventDetails.unit;
         eventLatitude = eventDetails.latitude!;
         eventLongitude = eventDetails.longitude!;
+        eventTime = eventDetails.time;
 
         eventPrice =
             (eventDetails.price == "free" || eventDetails.price == "Free")
@@ -84,7 +119,7 @@ class _EventPageState extends State<EventPage> {
 
   void add() {
     setState(() {
-      if (count < (event["stockLeft"] > 10 ? 10 : event["stockLeft"])) {
+      if (count < (eventStockLeft > 10 ? 10 : eventStockLeft)) {
         ++count;
       }
     });
@@ -93,10 +128,10 @@ class _EventPageState extends State<EventPage> {
   // Function to launch Google Maps or Apple Maps
   Future<void> openMap() async {
     String googleMapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=${event["latitude"]},${event["longitude"]}";
+        "https://www.google.com/maps/search/?api=1&query=$eventLatitude,$eventLongitude";
 
     String appleMapsUrl =
-        "http://maps.apple.com/?ll=${event["latitude"]},${event["longitude"]}";
+        "http://maps.apple.com/?ll=$eventLatitude,$eventLongitude";
 
     // Use canLaunchUrl and launchUrl to open the maps
     if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
@@ -107,24 +142,6 @@ class _EventPageState extends State<EventPage> {
       throw "Could not open the map.";
     }
   }
-
-  final Map<dynamic, dynamic> event = {
-    "title": "Concert in the Park",
-    "image":
-        "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg",
-    "date": "24/12/2024",
-    "time": "16:00",
-    "location": "Tallinn",
-    "category": "Sport",
-    "address": "123 Main Street, Tallinn, Estonia",
-    "latitude": 59.4370,
-    "longitude": 24.7536,
-    "price": 25.00,
-    "description":
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    "stockLeft": 100,
-    "isBookmarked": false
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -160,9 +177,23 @@ class _EventPageState extends State<EventPage> {
                   actions: [
                     InkWell(
                       onTap: () {
-                        setState(() {
-                          isBookmarked = !isBookmarked;
-                        });
+                        if (isBookmarked) {
+                          removeBookmarkEvent(
+                              context: context,
+                              userID: "$userID",
+                              eventID: widget.eventId);
+                          setState(() {
+                            isBookmarked = !isBookmarked;
+                          });
+                        } else {
+                          bookmarkEvent(
+                              context: context,
+                              userID: "$userID",
+                              eventID: widget.eventId);
+                          setState(() {
+                            isBookmarked = !isBookmarked;
+                          });
+                        }
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
@@ -204,7 +235,7 @@ class _EventPageState extends State<EventPage> {
                     ListView(
                       children: [
                         Text(
-                          "$eventDate ${event["time"]}",
+                          "$eventDate $eventTime",
                         ),
                         const SizedBox(
                           height: 6,

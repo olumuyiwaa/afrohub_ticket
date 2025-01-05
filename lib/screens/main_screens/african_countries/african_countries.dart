@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +15,8 @@ import 'country_page.dart';
 import 'create_country.dart';
 
 class AfricanCountriesPage extends StatefulWidget {
+  const AfricanCountriesPage({super.key});
+
   @override
   State<AfricanCountriesPage> createState() => _AfricanCountriesPageState();
 }
@@ -22,21 +25,29 @@ class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
   late Future<List<Country>> featuredEvents;
 
   String? username;
-
+  bool _isLoading = true;
   List<Country> countries = [];
 
   Future<void> _loadCountries() async {
-    final fetchedCountries = await getCountries();
     setState(() {
-      countries = fetchedCountries.toList();
+      _isLoading = true;
     });
+    try {
+      final fetchedCountries = await getCountries();
+      setState(() {
+        countries = fetchedCountries.toList();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _loadCountries();
-    getUserInfo();
+    Future.wait([getUserInfo(), _loadCountries()]);
   }
 
   Future<void> getUserInfo() async {
@@ -81,62 +92,87 @@ class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
         const SizedBox(
           height: 12,
         ),
-        countries.isEmpty
+        _isLoading
             ? Center(
-                child: Lottie.asset(
-                  'assets/lottie/loading.json',
-                  fit: BoxFit.cover,
-                ),
-              )
-            : GridView.builder(
-                padding: const EdgeInsets.all(8),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  mainAxisExtent: 140,
-                ),
-                itemCount: countries.length,
-                itemBuilder: (context, index) {
-                  final country = countries[index];
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => CountryPage(
-                                    countryId: country.id,
-                                  )));
-                    },
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    const SizedBox(height: 240),
+                    Lottie.asset(
+                      'assets/lottie/loading.json',
+                      fit: BoxFit.cover,
+                    )
+                  ]))
+            : countries.isEmpty
+                ? Center(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Container(
-                            clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8)),
-                            child: _buildImage(
-                              country.image,
-                            ),
-                          ),
+                        const SizedBox(height: 240),
+                        SvgPicture.asset(
+                          'assets/svg/africa.svg',
+                          width: 180,
+                          color: const Color(0xff869FAC),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          country.title,
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        const SizedBox(
+                          height: 24,
                         ),
+                        const Text('No Country Information Available'),
                       ],
                     ),
-                  );
-                },
-              ),
+                  )
+                : GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      mainAxisExtent: 140,
+                    ),
+                    itemCount: countries.length,
+                    itemBuilder: (context, index) {
+                      final country = countries[index];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      CountryPage(
+                                        countryId: country.id,
+                                      )));
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.maxFinite,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: _buildImage(
+                                  country.image,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              country.title,
+                              style: const TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
       ]),
     );
   }
