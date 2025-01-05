@@ -29,8 +29,6 @@ class _CategoryPageState extends State<CategoryPage> {
         _fetchEventsCategory();
       });
     } catch (e) {
-      // Handle error if fetching events fails
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load events')),
       );
