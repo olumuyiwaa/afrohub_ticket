@@ -26,6 +26,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<List<Event>> featuredEvents;
   String? username;
+  String? userId;
 
   List<Event> _events = [];
 
@@ -41,13 +42,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadEvents();
     getUserInfo();
+    getUserProfile("$userId");
   }
 
   Future<void> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? fetchedName = prefs.getString('full_name');
+    String? fetchedID = prefs.getString('id');
     setState(() {
       username = fetchedName;
+      userId = fetchedID;
     });
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../api/api_put.dart';
 import '../../../utilities/buttons/button_big.dart';
 import '../../../utilities/const.dart';
 import '../../../utilities/input/input_field.dart';
@@ -12,7 +13,12 @@ import '../../../utilities/input/input_field.dart';
 class EditProfile extends StatefulWidget {
   final String name;
   final String phone;
-  const EditProfile({super.key, required this.name, required this.phone});
+  final String userID;
+  const EditProfile(
+      {super.key,
+      required this.name,
+      required this.phone,
+      required this.userID});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -284,8 +290,21 @@ class _EditProfileState extends State<EditProfile> {
                         child: const ButtonBig(
                           buttonText: 'Save',
                         ),
-                        onTap: () {} // This removes all routes from the stack.
-                        ),
+                        onTap: () {
+                          final selectedInterests = selectedInterest.entries
+                              .where((entry) => entry.value)
+                              .map((entry) => entry.key)
+                              .toList();
+
+                          profileUpdate(
+                            context: context,
+                            image: _profileImage,
+                            userID: widget.userID,
+                            fullName: fullName.text,
+                            phone: phoneNumber.text,
+                            interests: selectedInterests,
+                          );
+                        }),
                   ],
                 )
               ],

@@ -23,7 +23,7 @@ Future<void> removeBookmarkEvent({
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
-          'Event added to bookmarks successfully!',
+          'Event removed from bookmarks successfully!',
           textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.green,
@@ -32,7 +32,7 @@ Future<void> removeBookmarkEvent({
   } else {
     final responseData = await http.Response.fromStream(response);
     final String errorMessage = json.decode(responseData.body)['message'] ??
-        'Failed to add to bookmarks';
+        'Failed to remove from bookmarks';
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

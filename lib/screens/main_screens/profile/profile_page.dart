@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:afrohub/screens/main_screens/profile/account_deactivation_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/auth.dart';
@@ -23,7 +27,10 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String? userEmail;
   String? userName;
+  String userImage = "";
   String? userPhone;
+  String? userID;
+  List<String> userInterests = [];
 
   @override
   void initState() {
@@ -36,21 +43,12 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       userEmail = prefs.getString('email');
       userName = prefs.getString('full_name');
+      userImage = prefs.getString('image')!;
       userPhone = prefs.getString('phone_number');
+      userID = prefs.getString('id');
+      userInterests = prefs.getStringList('interests')!;
     });
   }
-
-  final Map<dynamic, dynamic> user = {
-    "image": "",
-    "interests": [
-      "All Africa",
-      "Western Africa",
-      "Nigeria",
-      "Ghana",
-      "South Africa",
-      "Egypt",
-    ],
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -116,16 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(400)),
-                          child: CachedNetworkImage(
-                            imageUrl: user["image"],
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(
-                              color: accentColor,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                SvgPicture.asset('assets/svg/usericon.svg'),
-                            fit: BoxFit.cover,
-                          ),
+                          child: _buildImage("$userImage"),
                         ),
                       ),
                       const SizedBox(
@@ -215,9 +204,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 mainAxisSpacing: 8,
                                 mainAxisExtent: 40,
                               ),
-                              itemCount: user["interests"].length,
+                              itemCount: userInterests.length,
                               itemBuilder: (context, index) {
-                                final interest = user["interests"][index];
+                                final interest = userInterests[index];
 
                                 return Container(
                                     padding: const EdgeInsets.symmetric(
@@ -264,6 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       EditProfile(
                                         name: userName!,
                                         phone: userPhone!,
+                                        userID: userID!,
                                       )));
                         },
                         icon: Icon(
@@ -347,5 +337,36 @@ class _ProfilePageState extends State<ProfilePage> {
         trailing: const Icon(Icons.chevron_right),
       ),
     );
+  }
+
+  Widget _buildImage(String image) {
+    // Check if the image is a URL or a Base64 string
+    if (image.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: image,
+        placeholder: (context, url) => Lottie.asset(
+          'assets/lottie/image.json',
+          fit: BoxFit.cover,
+        ),
+        errorWidget: (context, url, error) => const Icon(
+          Icons.person_rounded,
+          size: 160,
+        ),
+        fit: BoxFit.cover,
+      );
+    } else {
+      if (image.isNotEmpty) {
+        final Uint8List decodedBytes = base64Decode(image);
+        return Image.memory(
+          decodedBytes,
+          fit: BoxFit.cover,
+        );
+      } else {
+        return const Icon(
+          Icons.person_rounded,
+          size: 160,
+        );
+      }
+    }
   }
 }
