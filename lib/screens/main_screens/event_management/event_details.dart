@@ -194,7 +194,7 @@ class _EventDetailsState extends State<EventDetails> {
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) => EventChat(
-                                eventID: 1,
+                                eventID: "eventID",
                                 eventName: eventTitle,
                                 eventPicture: eventImage)));
                   },

@@ -41,8 +41,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadEvents();
-    getUserInfo();
-    getUserProfile("$userId");
+    getUserInfo().then((_) => getUserProfile(userId));
   }
 
   Future<void> getUserInfo() async {
@@ -249,7 +248,10 @@ class _HomePageState extends State<HomePage> {
                     },
                   )
           ],
-        )
+        ),
+        const SizedBox(
+          height: 8,
+        ),
       ],
     );
   }

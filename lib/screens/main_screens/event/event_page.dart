@@ -27,7 +27,7 @@ class EventPage extends StatefulWidget {
 }
 
 class _EventPageState extends State<EventPage> {
-  int count = 0;
+  int count = 1;
   String eventTitle = "";
   String eventDescription = "";
   String eventLocation = "";
@@ -37,6 +37,7 @@ class _EventPageState extends State<EventPage> {
   int eventStockLeft = 0;
   String eventPrice = "";
   String eventCategory = "";
+  String eventID = "";
   double eventLatitude = 0;
   double eventLongitude = 0;
   String eventTime = "";
@@ -97,6 +98,7 @@ class _EventPageState extends State<EventPage> {
         eventLatitude = eventDetails.latitude!;
         eventLongitude = eventDetails.longitude!;
         eventTime = eventDetails.time;
+        eventID = eventDetails.id;
 
         eventPrice =
             (eventDetails.price == "free" || eventDetails.price == "Free")
@@ -111,7 +113,7 @@ class _EventPageState extends State<EventPage> {
 
   void subtract() {
     setState(() {
-      if (count > 0) {
+      if (count > 1) {
         --count;
       }
     });
@@ -224,7 +226,6 @@ class _EventPageState extends State<EventPage> {
                         fit: BoxFit.cover, // Adjust the image fit
                       ),
                     ),
-                    child: const SizedBox.shrink(),
                   )),
                 )
               ],
@@ -420,7 +421,7 @@ class _EventPageState extends State<EventPage> {
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
                                             EventChat(
-                                                eventID: 1,
+                                                eventID: eventID,
                                                 eventName: eventTitle,
                                                 eventPicture: eventImage)));
                               },
@@ -502,6 +503,8 @@ class _EventPageState extends State<EventPage> {
                                               location: eventLocation,
                                               price: double.parse(eventPrice),
                                               unit: count,
+                                              ticketId: eventID,
+                                              image: eventImage,
                                             )));
                               },
                               child: const ButtonBig(buttonText: "Buy Ticket"),

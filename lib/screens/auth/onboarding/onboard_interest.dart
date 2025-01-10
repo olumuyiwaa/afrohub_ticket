@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../api/api_put.dart';
 import '../../../utilities/buttons/button_big.dart';
 import '../../../utilities/const.dart';
 import '../../active_session.dart';
@@ -74,6 +76,20 @@ class _OnboardInterestState extends State<OnboardInterest> {
     "Zimbabwe"
   ];
   final Map<String, bool> selectedInterest = {};
+  String? userID;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userID = prefs.getString('id');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,15 +158,27 @@ class _OnboardInterestState extends State<OnboardInterest> {
                     child: const ButtonBig(
                       buttonText: 'Continue',
                     ),
-                    onTap: () => Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const ActiveSession(),
-                      ),
-                      (Route<dynamic> route) =>
-                          false, // This removes all routes from the stack.
-                    ),
+                    onTap: () {
+                      final selectedInterests = selectedInterest.entries
+                          .where((entry) => entry.value)
+                          .map((entry) => entry.key)
+                          .toList();
+
+                      interestUpdate(
+                        context: context,
+                        userID: "$userID",
+                        interests: selectedInterests,
+                      );
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const ActiveSession(),
+                        ),
+                        (Route<dynamic> route) =>
+                            false, // This removes all routes from the stack.
+                      );
+                    },
                   ),
                 )
               ],

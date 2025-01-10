@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../api/api_get.dart';
 import '../../../api/auth.dart';
 import '../../../utilities/const.dart';
 import '../event_management/ticket_shop.dart';
@@ -16,6 +17,7 @@ import 'change_password.dart';
 import 'edit_profile.dart';
 import 'help.dart';
 import 'privacy_page.dart';
+import 'update_interests.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -35,35 +37,63 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    getUserInfo();
+
+    getUserInfo().then((_) => getUserProfile(userID));
   }
 
   Future<void> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      userEmail = prefs.getString('email');
-      userName = prefs.getString('full_name');
-      userImage = prefs.getString('image')!;
-      userPhone = prefs.getString('phone_number');
-      userID = prefs.getString('id');
-      userInterests = prefs.getStringList('interests')!;
+      userEmail = prefs.getString('email') ?? '';
+      userName = prefs.getString('full_name') ?? '';
+      userImage = prefs.getString('image') ?? '';
+      userPhone = prefs.getString('phone_number') ?? '';
+      userID = prefs.getString('id') ?? '';
+      userInterests = prefs.getStringList('interests') ?? [];
     });
+  }
+
+  Future<void> showLogoutDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                signOut(
+                  context: context,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> signUserOut() async {
-      signOut(
-        context: context,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         actions: [
           InkWell(
             onTap: () {
-              signUserOut();
+              showLogoutDialog(context);
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(
@@ -114,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(400)),
-                          child: _buildImage("$userImage"),
+                          child: _buildImage(userImage),
                         ),
                       ),
                       const SizedBox(
@@ -149,12 +179,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(
                                 width: 15.0,
                               ),
-                              Text(
+                              Expanded(
+                                  child: Text(
                                 userEmail ?? "Loading...",
                                 style: const TextStyle(
                                   fontSize: 16,
                                 ),
-                              ),
+                              )),
                             ],
                           ),
                           const SizedBox(
@@ -170,71 +201,104 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(
                                 width: 15.0,
                               ),
-                              Text(
+                              Expanded(
+                                  child: Text(
                                 userPhone ?? "Loading...",
                                 style: const TextStyle(
                                   fontSize: 16,
                                 ),
-                              ),
+                              )),
                             ],
                           )
                         ],
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: 24,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Interests',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Interests',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                              ),
+                              InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                UpdateInterests(
+                                                  userID: userID!,
+                                                )));
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: accentColor,
+                                  )),
+                            ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             child: Expanded(
-                                child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 8,
-                                mainAxisSpacing: 8,
-                                mainAxisExtent: 40,
-                              ),
-                              itemCount: userInterests.length,
-                              itemBuilder: (context, index) {
-                                final interest = userInterests[index];
-
-                                return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: accentColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        textAlign: TextAlign.center,
-                                        interest[0].toUpperCase() +
-                                            interest.substring(
-                                                1), // Correct capitalization
-                                        style: TextStyle(
-                                          overflow: TextOverflow.ellipsis,
-                                          fontSize: 12,
-                                          color: accentColor,
-                                          fontWeight: FontWeight.w500,
+                                child: userInterests.isEmpty
+                                    ? const Center(
+                                        child: Text(
+                                          'No interests added. Click the edit icon to add your interests.',
+                                          style: TextStyle(
+                                              fontSize: 14, color: Colors.grey),
                                         ),
-                                      ),
-                                    ));
-                              },
-                            )),
+                                      )
+                                    : GridView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 8,
+                                          mainAxisSpacing: 8,
+                                          mainAxisExtent: 40,
+                                        ),
+                                        itemCount: userInterests.length,
+                                        itemBuilder: (context, index) {
+                                          final interest = userInterests[index];
+
+                                          return Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: accentColor,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  textAlign: TextAlign.center,
+                                                  interest[0].toUpperCase() +
+                                                      interest.substring(
+                                                          1), // Correct capitalization
+                                                  style: TextStyle(
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    fontSize: 12,
+                                                    color: accentColor,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ));
+                                        },
+                                      )),
                           )
                         ],
                       )

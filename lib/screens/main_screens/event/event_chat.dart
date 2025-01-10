@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../utilities/const.dart';
 
 class EventChat extends StatefulWidget {
-  final int eventID;
+  final String eventID;
   final String eventName;
   final String? eventPicture;
   const EventChat({

@@ -11,14 +11,14 @@ Future<Map<String, dynamic>> getUserInfo() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return {
     'id': prefs.getString('id'),
-    'seller_id': prefs.getString('token'),
-    'name': prefs.getString('full_name'),
-    'phone_number': prefs.getString('email'),
-    'email': prefs.getString('phone_number'),
+    'token': prefs.getString('token'),
+    'full_name': prefs.getString('full_name'),
+    'email': prefs.getString('email'),
+    'phone_number': prefs.getString('phone_number'),
   };
 }
 
-Future getUserProfile(String userID) async {
+Future getUserProfile(String? userID) async {
   final headers = await getHeaders();
   final response = await http.get(
     Uri.parse('$baseUrl/bookmark/$userID/profile'),
@@ -27,9 +27,9 @@ Future getUserProfile(String userID) async {
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> responseData = json.decode(response.body);
-    final String id = responseData['id'];
+    final String id = responseData['_id'];
+    final String image = responseData['image'];
     final String name = responseData['full_name'];
-    final String email = responseData['email'];
     final String phone = responseData['phone_number'];
     final List<String> interests = responseData['interests'];
 
@@ -37,9 +37,10 @@ Future getUserProfile(String userID) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('id', id);
     await prefs.setString('full_name', name);
-    await prefs.setString('email', email);
     await prefs.setString('phone_number', phone);
-    await prefs.setStringList('interests', interests);
+    await prefs.setString('image', image);
+    await prefs.setStringList(
+        'interests', interests == ["[]"] ? [] : interests);
   } else {
     throw Exception('Failed to Load User Details: ${response.statusCode}');
   }

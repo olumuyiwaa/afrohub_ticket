@@ -30,16 +30,16 @@ class EventCard2 extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        Expanded(
+            child: Container(
           clipBehavior: Clip.hardEdge,
-          height: 152,
           width: double.maxFinite,
           decoration: BoxDecoration(
             color: Colors.grey,
             borderRadius: BorderRadius.circular(4),
           ),
           child: _buildImage(),
-        ),
+        )),
         const SizedBox(height: 8),
         Text(
           title,

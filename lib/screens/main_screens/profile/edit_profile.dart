@@ -25,68 +25,6 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  final List<dynamic> categories = [
-    "All Africa",
-    "Western Africa",
-    "Eastern Africa",
-    "Northern Africa",
-    "Southern Africa",
-    "Algeria",
-    "Angola",
-    "Benin",
-    "Botswana",
-    "Burkina Faso",
-    "Burundi",
-    "Cabo Verde",
-    "Cameroon",
-    "Central African Republic",
-    "Chad",
-    "Comoros",
-    "Congo",
-    "Congo (DRC)",
-    "Djibouti",
-    "Egypt",
-    "Equatorial Guinea",
-    "Eritrea",
-    "Eswatini",
-    "Ethiopia",
-    "Gabon",
-    "Gambia",
-    "Ghana",
-    "Guinea",
-    "Guinea-Bissau",
-    "Ivory Coast",
-    "Kenya",
-    "Lesotho",
-    "Liberia",
-    "Libya",
-    "Madagascar",
-    "Malawi",
-    "Mali",
-    "Mauritania",
-    "Mauritius",
-    "Morocco",
-    "Mozambique",
-    "Namibia",
-    "Niger",
-    "Nigeria",
-    "Rwanda",
-    "Sao Tome and Principe",
-    "Senegal",
-    "Seychelles",
-    "Sierra Leone",
-    "Somalia",
-    "South Africa",
-    "South Sudan",
-    "Sudan",
-    "Tanzania",
-    "Togo",
-    "Tunisia",
-    "Uganda",
-    "Zambia",
-    "Zimbabwe"
-  ];
-
   final fullName = TextEditingController();
   final phoneNumber = TextEditingController();
 
@@ -227,86 +165,19 @@ class _EditProfileState extends State<EditProfile> {
                 const SizedBox(
                   height: 12,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Interests',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                InkWell(
+                    child: const ButtonBig(
+                      buttonText: 'Save',
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Expanded(
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            mainAxisExtent: 40,
-                          ),
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            final interest = categories[index];
-                            final isSelected =
-                                selectedInterest[interest] ?? false;
-
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedInterest[interest] = !isSelected;
-                                });
-                              },
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? accentColor : greyColor,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    textAlign: TextAlign.center,
-                                    interest[0].toUpperCase() +
-                                        interest.substring(1),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isSelected
-                                          ? Colors.black
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                        child: const ButtonBig(
-                          buttonText: 'Save',
-                        ),
-                        onTap: () {
-                          final selectedInterests = selectedInterest.entries
-                              .where((entry) => entry.value)
-                              .map((entry) => entry.key)
-                              .toList();
-
-                          profileUpdate(
-                            context: context,
-                            image: _profileImage,
-                            userID: widget.userID,
-                            fullName: fullName.text,
-                            phone: phoneNumber.text,
-                            interests: selectedInterests,
-                          );
-                        }),
-                  ],
-                )
+                    onTap: () {
+                      profileUpdate(
+                        context: context,
+                        image: _profileImage,
+                        userID: widget.userID,
+                        fullName: fullName.text,
+                        phone: phoneNumber.text,
+                      );
+                    })
               ],
             ),
           )

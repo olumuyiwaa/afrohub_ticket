@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'api_helper.dart';
 
@@ -200,5 +202,159 @@ Future<void> bookmarkEvent({
       ));
     }
     throw Exception(errorMessage);
+  }
+}
+
+Future<void> initiatePaypalPayment({
+  required BuildContext context,
+  required String ticketId,
+  required int ticketCount,
+}) async {
+  try {
+    // API URL
+    final Uri uri =
+        Uri.parse('https://ticketbackend-0iem.onrender.com/api/paypal/pay');
+
+    // Request headers
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Request body
+    final Map<String, dynamic> body = {
+      'ticketId': ticketId,
+      'ticketCount': ticketCount,
+    };
+
+    // Make the POST request
+    final response = await http.post(
+      uri,
+      headers: headers,
+      body: json.encode(body),
+    );
+
+    if (response.statusCode == HttpStatus.movedPermanently ||
+        response.statusCode == HttpStatus.found) {
+      // Get the Location header (new URL)
+      var redirectUrl = response.headers['location'];
+      if (redirectUrl != null) {
+        Navigator.pop(context);
+        // Launch the redirect URL in an external browser or app
+        if (await canLaunch(redirectUrl)) {
+          await launch(redirectUrl);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not launch the URL'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      final errorMessage = response.body;
+      debugPrint(
+          'Error Response: $errorMessage'); // Log the error for debugging
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment Error: $errorMessage'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      throw Exception('Payment failed: ${response.statusCode}');
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    debugPrint('Payment Error: $e');
+    rethrow;
+  }
+}
+
+// Stripe payment method
+Future<void> handleStripePayment({
+  required BuildContext context,
+  required String ticketId,
+  required int ticketCount,
+}) async {
+  try {
+    // API URL for creating PaymentIntent
+    final Uri stripeUri = Uri.parse(
+        'https://ticketbackend-0iem.onrender.com/api/stripe/create-payment-intent');
+
+    // Request headers
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Request body
+    final Map<String, dynamic> body = {
+      'ticketId': ticketId,
+      'ticketCount': ticketCount,
+    };
+
+    // Make the POST request to create a PaymentIntent
+    final response = await http.post(
+      stripeUri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Parse PaymentIntent response
+      final paymentIntentData = jsonDecode(response.body);
+
+      // Initialize Stripe payment sheet with the necessary data
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentData['clientSecret'],
+          style: ThemeMode.dark,
+          merchantDisplayName: 'Afro Hub', // Replace with your business name
+        ),
+      );
+
+      // Display payment sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      // Show success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Payment Successful")),
+        );
+      }
+    } else {
+      final errorMessage = response.body;
+      debugPrint('Error Response: $errorMessage');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment Error: $errorMessage'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      throw Exception('Payment failed with status: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Handle and log errors
+    debugPrint('Payment Error: $e');
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    print('Error: ${e.toString()}');
+    rethrow; // Rethrow error if needed for further handling
   }
 }

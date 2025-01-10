@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../screens/active_session.dart';
 import 'api_helper.dart';
 
 Future<void> profileUpdate({
@@ -13,7 +14,6 @@ Future<void> profileUpdate({
   required String userID,
   required String fullName,
   required String phone,
-  required List<String> interests,
 }) async {
   var headers = await getHeaders();
 
@@ -22,8 +22,7 @@ Future<void> profileUpdate({
       http.MultipartRequest('PUT', Uri.parse('$baseUrl/users/profile/$userID'))
         ..headers.addAll(headers)
         ..fields['full_name'] = fullName
-        ..fields['phone_number'] = phone
-        ..fields['interests'] = json.encode(interests);
+        ..fields['phone_number'] = phone;
   if (image != null) {
     request.files.add(await http.MultipartFile.fromPath('image', image.path));
   }
@@ -42,7 +41,6 @@ Future<void> profileUpdate({
       }
       await prefs.setString('full_name', fullName);
       await prefs.setString('phone_number', phone);
-      await prefs.setStringList('interests', interests);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -52,7 +50,11 @@ Future<void> profileUpdate({
           ),
           backgroundColor: Colors.green,
         ));
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    const ActiveSession(pageIndex: 4)));
       }
     } else {
       // Handle error response
@@ -80,6 +82,77 @@ Future<void> profileUpdate({
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           'Failed to update profile: $e',
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    rethrow;
+  }
+}
+
+Future<void> interestUpdate({
+  required BuildContext context,
+  required String userID,
+  required List<String> interests,
+}) async {
+  var headers = await getHeaders();
+
+  // Create multipart request
+  var request =
+      http.MultipartRequest('PUT', Uri.parse('$baseUrl/users/profile/$userID'))
+        ..headers.addAll(headers)
+        ..fields['interests'] = json.encode(interests);
+
+  try {
+    // Send the request
+    final response = await request.send();
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Save data to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('interests', interests);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            'Profile Updated successfully!',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.green,
+        ));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    const ActiveSession(pageIndex: 4)));
+      }
+    } else {
+      // Handle error response
+      String errorMessage = 'Profile Update failed';
+      try {
+        final responseData = await http.Response.fromStream(response);
+        errorMessage =
+            json.decode(responseData.body)['message'] ?? errorMessage;
+      } catch (_) {
+        errorMessage = 'An unexpected error occurred';
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            errorMessage,
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red,
+        ));
+      }
+      throw Exception(errorMessage);
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Failed to update interests: $e',
           textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.red,

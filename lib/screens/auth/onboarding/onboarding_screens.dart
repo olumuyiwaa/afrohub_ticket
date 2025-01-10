@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import '../../../utilities/const.dart';
 import '../../welcome_screen.dart';
 
-class SplashScreens extends StatefulWidget {
-  const SplashScreens({super.key});
+class OnboardingScreens extends StatefulWidget {
+  const OnboardingScreens({super.key});
 
   @override
-  State<SplashScreens> createState() => _SplashScreensState();
+  State<OnboardingScreens> createState() => _OnboardingScreensState();
 }
 
 var _fontHeaderStyle =
@@ -87,7 +87,7 @@ final pages = [
       )),
 ];
 
-class _SplashScreensState extends State<SplashScreens> {
+class _OnboardingScreensState extends State<OnboardingScreens> {
   @override
   Widget build(BuildContext context) {
     return Container(
