@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../api/api_get.dart';
-import '../../../model/events.dart';
+import '../../../model/class_events.dart';
 import '../../../utilities/buttons/button_big.dart';
 import '../../../utilities/const.dart';
 import 'create_event.dart';

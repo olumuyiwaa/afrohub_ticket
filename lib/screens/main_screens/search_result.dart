@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../api/api_get.dart';
-import '../../model/events.dart';
+import '../../model/class_events.dart';
 import '../../utilities/search.dart';
 import '../../utilities/widget/event_card_2.dart';
 import 'event/event_page.dart';

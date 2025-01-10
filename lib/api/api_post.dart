@@ -354,7 +354,6 @@ Future<void> handleStripePayment({
         ),
       );
     }
-    print('Error: ${e.toString()}');
     rethrow; // Rethrow error if needed for further handling
   }
 }

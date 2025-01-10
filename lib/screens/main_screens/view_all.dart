@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../model/events.dart';
+import '../../model/class_events.dart';
 import '../../utilities/buttons/notification_button.dart';
 import '../../utilities/widget/event_card.dart';
 import 'event/event_page.dart';

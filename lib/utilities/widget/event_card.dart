@@ -16,6 +16,7 @@ class EventCard extends StatelessWidget {
   final String? category;
   final String? unit;
   final String price;
+  final String? status;
 
   const EventCard({
     super.key,
@@ -26,6 +27,7 @@ class EventCard extends StatelessWidget {
     this.category,
     required this.price,
     this.unit,
+    this.status,
   });
 
   @override
@@ -55,14 +57,31 @@ class EventCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text(
-                  title,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    status != null
+                        ? Text(
+                            "$status",
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: greyColor,
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : const SizedBox.shrink()
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(

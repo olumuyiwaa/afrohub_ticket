@@ -8,7 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_get.dart';
-import '../../../model/countries.dart';
+import '../../../model/class_countries.dart';
 import '../../../utilities/buttons/button_big.dart';
 import '../../../utilities/buttons/notification_button.dart';
 import 'country_page.dart';

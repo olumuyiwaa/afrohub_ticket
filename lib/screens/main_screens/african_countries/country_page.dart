@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../utilities/buttons/button_big.dart';
 import '../../../api/api_get.dart';
-import '../../../model/events.dart';
+import '../../../model/class_events.dart';
 import '../../../utilities/widget/event_card.dart';
 import '../event/event_page.dart';
 import '../view_all.dart';

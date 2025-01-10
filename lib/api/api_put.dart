@@ -99,10 +99,11 @@ Future<void> interestUpdate({
   var headers = await getHeaders();
 
   // Create multipart request
-  var request =
-      http.MultipartRequest('PUT', Uri.parse('$baseUrl/users/profile/$userID'))
-        ..headers.addAll(headers)
-        ..fields['interests'] = json.encode(interests);
+  var request = http.Request('PUT', Uri.parse('$baseUrl/users/profile/$userID'))
+    ..headers.addAll(headers)
+    ..body = json.encode({
+      'interests': interests,
+    });
 
   try {
     // Send the request
@@ -128,6 +129,7 @@ Future<void> interestUpdate({
                     const ActiveSession(pageIndex: 4)));
       }
     } else {
+      print(response.statusCode);
       // Handle error response
       String errorMessage = 'Profile Update failed';
       try {

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/countries.dart';
-import '../model/events.dart';
+import '../model/class_countries.dart';
+import '../model/class_events.dart';
+import '../model/class_tickets.dart';
 import 'api_helper.dart';
 
 Future<Map<String, dynamic>> getUserInfo() async {
@@ -18,7 +19,7 @@ Future<Map<String, dynamic>> getUserInfo() async {
   };
 }
 
-Future getUserProfile(String? userID) async {
+Future<void> getUserProfile(String? userID) async {
   final headers = await getHeaders();
   final response = await http.get(
     Uri.parse('$baseUrl/bookmark/$userID/profile'),
@@ -31,7 +32,13 @@ Future getUserProfile(String? userID) async {
     final String image = responseData['image'];
     final String name = responseData['full_name'];
     final String phone = responseData['phone_number'];
-    final List<String> interests = responseData['interests'];
+
+    // Decode the interests field
+    final List<String> rawInterests =
+        List<String>.from(responseData['interests']);
+    final List<String> interests = rawInterests.isNotEmpty
+        ? List<String>.from(jsonDecode(rawInterests[0]))
+        : [];
 
     // Store the user details in SharedPreferences
     final prefs = await SharedPreferences.getInstance();
@@ -39,8 +46,7 @@ Future getUserProfile(String? userID) async {
     await prefs.setString('full_name', name);
     await prefs.setString('phone_number', phone);
     await prefs.setString('image', image);
-    await prefs.setStringList(
-        'interests', interests == ["[]"] ? [] : interests);
+    await prefs.setStringList('interests', interests);
   } else {
     throw Exception('Failed to Load User Details: ${response.statusCode}');
   }
@@ -116,5 +122,20 @@ Future<Country> getCountryDetails(String countryID) async {
     return Country.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to load Country Details: ${response.statusCode}');
+  }
+}
+
+Future<List<Ticket>> fetchTickets() async {
+  final headers = await getHeaders();
+  final response = await http.get(
+    Uri.parse('$baseUrl/paypal/payment-history'),
+    headers: headers,
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.map((json) => Ticket.fromJson(json)).toList();
+  } else {
+    throw Exception('Failed to load tickets: ${response.reasonPhrase}');
   }
 }

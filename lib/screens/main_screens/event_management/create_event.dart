@@ -53,6 +53,7 @@ class _CreateEventState extends State<CreateEvent> {
   final TextEditingController eventUnit = TextEditingController();
 
   final List<String> africanCountries = [
+    "Select Country",
     "All Africa",
     "Western Africa",
     "Eastern Africa",
@@ -114,7 +115,7 @@ class _CreateEventState extends State<CreateEvent> {
     "Zimbabwe"
   ];
 
-  String? selectedAfricanCountry;
+  String selectedAfricanCountry = "All Africa";
 
   bool isLoading = false;
 
@@ -192,7 +193,7 @@ class _CreateEventState extends State<CreateEvent> {
         title: eventTitle.text,
         location: eventLocation.text,
         price: eventPrice.text,
-        category: selectedAfricanCountry ?? '',
+        category: selectedAfricanCountry,
         date: eventDate.text,
         time: eventTime.text,
         address: eventAddress.text,
@@ -241,6 +242,7 @@ class _CreateEventState extends State<CreateEvent> {
             GestureDetector(
               onTap: _pickCoverImage,
               child: Container(
+                clipBehavior: Clip.hardEdge,
                 width: double.infinity,
                 height: 220,
                 decoration: BoxDecoration(
@@ -290,6 +292,9 @@ class _CreateEventState extends State<CreateEvent> {
                 selectedAfricanCountry = value;
               }),
               inputTitle: 'Event Theme',
+              validator: (value) => selectedAfricanCountry == "Select Country"
+                  ? 'Please select a valid country'
+                  : null,
             ),
             InputFieldLarge(
               inputHintText: "Enter Event Description",

@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/api_get.dart';
 import '../../../api/auth.dart';
 import '../../../utilities/const.dart';
+import '../../view_events_by_interest.dart';
 import '../event_management/ticket_shop.dart';
 import '../tickets/tickets.dart';
 import 'change_password.dart';
@@ -269,34 +270,48 @@ class _ProfilePageState extends State<ProfilePage> {
                                         itemBuilder: (context, index) {
                                           final interest = userInterests[index];
 
-                                          return Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                  color: accentColor,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  textAlign: TextAlign.center,
-                                                  interest[0].toUpperCase() +
-                                                      interest.substring(
-                                                          1), // Correct capitalization
-                                                  style: TextStyle(
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontSize: 12,
-                                                    color: accentColor,
-                                                    fontWeight: FontWeight.w500,
+                                          return InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            InterestPage(
+                                                              title: interest,
+                                                            )));
+                                              },
+                                              child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    border: Border.all(
+                                                      color: accentColor,
+                                                      width: 2,
+                                                    ),
                                                   ),
-                                                ),
-                                              ));
+                                                  child: Center(
+                                                    child: Text(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      interest[0]
+                                                              .toUpperCase() +
+                                                          interest.substring(
+                                                              1), // Correct capitalization
+                                                      style: TextStyle(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        fontSize: 12,
+                                                        color: accentColor,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  )));
                                         },
                                       )),
                           )
@@ -318,6 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         name: userName!,
                                         phone: userPhone!,
                                         userID: userID!,
+                                        userImage: userImage,
                                       )));
                         },
                         icon: Icon(
@@ -351,7 +367,7 @@ class _ProfilePageState extends State<ProfilePage> {
               context: context,
               title: 'My Tickets',
               icon: 'ticket.svg',
-              destinationPage: Tickets()),
+              destinationPage: const Tickets()),
           buildSettingsTile(
               context: context,
               title: 'Privacy',

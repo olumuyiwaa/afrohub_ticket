@@ -10,11 +10,3 @@ Future<Map<String, String>> getHeaders() async {
     'Content-Type': 'application/json',
   };
 }
-
-Future<Map<String, String>> getChatHeaders() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? token = prefs.getString('token');
-  return {
-    'Authorization': 'Bearer $token',
-  };
-}

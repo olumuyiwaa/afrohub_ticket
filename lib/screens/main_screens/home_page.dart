@@ -3,7 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/api_get.dart';
-import '../../model/events.dart';
+import '../../model/class_events.dart';
 import '../../utilities/buttons/button_big.dart';
 import '../../utilities/buttons/notification_button.dart';
 import '../../utilities/const.dart';

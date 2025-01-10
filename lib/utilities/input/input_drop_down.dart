@@ -82,9 +82,7 @@ class _InputDropDownState extends State<InputDropDown> {
                   isExpanded: true,
                 ),
               ),
-              if (selectedOption == null ||
-                  selectedOption == "Select Country" ||
-                  selectedOption == "")
+              if (selectedOption == "Select Country")
                 const Padding(
                   padding: EdgeInsets.only(top: 4, left: 4),
                   child: Text(

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:afrohub/model/class_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -5,28 +9,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../utilities/const.dart';
 
 class TicketPage extends StatelessWidget {
-  TicketPage({super.key});
+  final Event ticketDetails;
+  final String unit;
+  TicketPage({super.key, required this.ticketDetails, required this.unit});
 
-  final Map<dynamic, dynamic> ticket = {
-    "title": "Concert in the Park",
-    "image":
-        "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg",
-    "date": "24/12/2024",
-    "time": "16:00",
-    "location": "Tallinn",
-    "category": "Party",
-    "address": "123 Main Street, Tallinn, Estonia",
-    "latitude": 59.4370,
-    "longitude": 24.7536,
-    "price": 25.00,
-    "organizer": "beauty look",
-    "description":
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    "unit": 3,
-    "organizerPhoto":
-        "https://media.licdn.com/dms/image/v2/D4D03AQHT47BuaMJRTg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1713186951164?e=1739404800&v=beta&t=Yw8rKZ6jIeB8tfEyFbWM4PdNGnd6N_lcpyzwVL6D2NQ",
-    "QRCodeLink": "https://www.bellegroveplantation.com",
-  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,9 +64,7 @@ class TicketPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: greyColor, // Fallback color
                 image: DecorationImage(
-                  image: NetworkImage(
-                    ticket["image"],
-                  ),
+                  image: _getImageProvider(ticketDetails.image!),
                   fit: BoxFit.cover, // Adjust the image fit
                 ),
               ),
@@ -114,7 +98,7 @@ class TicketPage extends StatelessWidget {
                     children: [
                       // Event Title
                       Text(
-                        ticket["title"],
+                        ticketDetails.title,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
@@ -133,7 +117,7 @@ class TicketPage extends StatelessWidget {
                                     TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                               Text(
-                                ticket["category"],
+                                ticketDetails.category,
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.bold),
                               ),
@@ -148,7 +132,7 @@ class TicketPage extends StatelessWidget {
                                     TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                               Text(
-                                ticket["date"],
+                                ticketDetails.date,
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.bold),
                               ),
@@ -168,7 +152,7 @@ class TicketPage extends StatelessWidget {
                                     TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                               Text(
-                                ticket["location"],
+                                ticketDetails.location,
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.bold),
                               ),
@@ -183,7 +167,7 @@ class TicketPage extends StatelessWidget {
                                     TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                               Text(
-                                "\$ ${ticket["price"]}",
+                                "\$ ${ticketDetails.price}",
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.bold),
                               ),
@@ -191,35 +175,7 @@ class TicketPage extends StatelessWidget {
                           )
                         ],
                       ),
-                      const SizedBox(height: 12),
 
-                      // Organizer
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundImage: NetworkImage(
-                              ticket["organizerPhoto"], // Organizer image
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                ticket["organizer"],
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                              const Text(
-                                'Organizer',
-                                style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -231,7 +187,7 @@ class TicketPage extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            ticket["unit"].toString(),
+                            unit,
                             style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           )
@@ -244,7 +200,7 @@ class TicketPage extends StatelessWidget {
                 // QR Code Section
                 Center(
                   child: QrImageView(
-                    data: ticket["QRCodeLink"], // Add ticket-specific QR data
+                    data: "${ticketDetails.QRCodeLink}",
                     version: QrVersions.auto,
                     size: 360,
                   ),
@@ -256,5 +212,21 @@ class TicketPage extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+ImageProvider _getImageProvider(String image) {
+  if (image.startsWith('http')) {
+    // If the image is a URL
+    return NetworkImage(image);
+  } else {
+    try {
+      // Try decoding the Base64 string
+      final Uint8List decodedBytes = base64Decode(image);
+      return MemoryImage(decodedBytes);
+    } catch (e) {
+      // Return a fallback image in case of error
+      return const AssetImage('assets/images/fallback.png');
+    }
   }
 }

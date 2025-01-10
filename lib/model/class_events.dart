@@ -12,6 +12,7 @@ class Event {
   final double? longitude;
   final double? latitude;
   final int unit;
+  final String? QRCodeLink;
 
   Event({
     required this.id,
@@ -27,6 +28,7 @@ class Event {
     required this.price,
     required this.category,
     required this.unit,
+    this.QRCodeLink,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class Event {
       price: json['price'],
       category: json['category'],
       unit: json['unit'] ?? 0,
+      QRCodeLink: json['link'] ?? "",
     );
   }
 }

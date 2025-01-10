@@ -1,7 +1,7 @@
 import 'package:afrohub/utilities/const.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/events.dart';
+import '../../model/class_events.dart';
 import '../../utilities/widget/event_card_2.dart';
 import 'event/event_page.dart';
 
