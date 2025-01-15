@@ -76,18 +76,19 @@ class _InputDropDownState extends State<InputDropDown> {
                     setState(() {
                       selectedOption = newValue!;
                     });
+                    widget.onOptionSelected(newValue!); // Notify parent
                   },
                   icon: const Icon(Icons.arrow_drop_down),
                   underline: const SizedBox(),
                   isExpanded: true,
                 ),
               ),
-              if (selectedOption == "Select Country")
-                const Padding(
-                  padding: EdgeInsets.only(top: 4, left: 4),
+              if (field.hasError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 4),
                   child: Text(
-                    'Please select a valid country',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    field.errorText ?? '',
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
             ],

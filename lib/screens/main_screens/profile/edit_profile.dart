@@ -95,7 +95,7 @@ class _EditProfileState extends State<EditProfile> {
                                     height: 254,
                                     width: 254,
                                   )
-                                : _buildImage("${widget.userImage}"),
+                                : _buildImage(widget.userImage),
                             Positioned(
                               bottom: 0,
                               left: 0,
@@ -181,9 +181,11 @@ class _EditProfileState extends State<EditProfile> {
     if (image.startsWith('http')) {
       return CachedNetworkImage(
         imageUrl: image,
-        placeholder: (context, url) => Lottie.asset(
-          'assets/lottie/image.json',
-          fit: BoxFit.cover,
+        placeholder: (context, url) => Center(
+          child: Lottie.asset(
+            'assets/lottie/image.json',
+            fit: BoxFit.cover,
+          ),
         ),
         errorWidget: (context, url, error) => const Icon(
           Icons.person_rounded,

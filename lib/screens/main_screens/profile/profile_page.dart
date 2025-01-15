@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:afrohub/screens/main_screens/profile/account_deactivation_page.dart';
+import 'package:afrohub/screens/main_screens/profile/manage_user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String? userName;
   String userImage = "";
   String? userPhone;
+  String? role;
   String? userID;
   List<String> userInterests = [];
 
@@ -49,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
       userName = prefs.getString('full_name') ?? '';
       userImage = prefs.getString('image') ?? '';
       userPhone = prefs.getString('phone_number') ?? '';
+      role = prefs.getString('role') ?? '';
       userID = prefs.getString('id') ?? '';
       userInterests = prefs.getStringList('interests') ?? [];
     });
@@ -346,8 +349,28 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 20,
           ),
+          role == "admin"
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Afrohub Admin',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    buildSettingsTile(
+                        context: context,
+                        title: 'Manage User',
+                        icon: 'users.svg',
+                        destinationPage: const ManageUserPage()),
+                  ],
+                )
+              : const SizedBox.shrink(),
           const Text(
-            'Profile Settings',
+            'Profile',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           const SizedBox(
@@ -355,9 +378,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           buildSettingsTile(
               context: context,
-              title: 'My Ticket Shop',
+              title: 'Ticket Shop',
               icon: 'shop.svg',
-              destinationPage: const TicketShop()),
+              destinationPage: TicketShop(
+                userID: userID,
+                role: role,
+              )),
           buildSettingsTile(
               context: context,
               title: 'Change Password',

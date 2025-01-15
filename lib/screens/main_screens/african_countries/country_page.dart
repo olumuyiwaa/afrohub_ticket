@@ -9,15 +9,18 @@ import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../utilities/buttons/button_big.dart';
+import '../../../api/api_delete.dart';
 import '../../../api/api_get.dart';
 import '../../../model/class_events.dart';
 import '../../../utilities/widget/event_card.dart';
 import '../event/event_page.dart';
 import '../view_all.dart';
+import 'edit_country.dart';
 
 class CountryPage extends StatefulWidget {
   final String countryId;
-  const CountryPage({super.key, required this.countryId});
+  final String role;
+  const CountryPage({super.key, required this.countryId, required this.role});
 
   @override
   State<CountryPage> createState() => _CountryPageState();
@@ -25,6 +28,7 @@ class CountryPage extends StatefulWidget {
 
 class _CountryPageState extends State<CountryPage> {
   String countryTitle = "";
+  String countryID = "";
   String countryDescription = "";
   String countryPresident = "";
   String countryPopulation = "";
@@ -50,6 +54,7 @@ class _CountryPageState extends State<CountryPage> {
       final countryDetails = await getCountryDetails(widget.countryId);
       setState(() {
         countryTitle = countryDetails.title;
+        countryID = countryDetails.id;
         countryDescription = countryDetails.description;
         countryPresident = countryDetails.president;
         countryPopulation = countryDetails.population;
@@ -91,6 +96,40 @@ class _CountryPageState extends State<CountryPage> {
             )),
       );
     }
+  }
+
+  Future<void> showDeleteDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete'),
+          content: const Text('Are you sure you want to delete this country?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                removeCountry(
+                  context: context,
+                  countryID: countryID,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Filters events based on the category
@@ -163,53 +202,69 @@ class _CountryPageState extends State<CountryPage> {
                     ),
                   ),
                   actions: [
-                    InkWell(
-                      onTap: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (BuildContext context) => const EditEvent()));
-                      },
-                      borderRadius: BorderRadius.circular(32),
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: accentColor,
-                        ),
-                      ),
-                    ),
-                    // InkWell(
-                    //   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) =>
-                    //             CountryChat(
-                    //                 countryID: 1,
-                    //                 countryName: countryTitle,
-                    //                 countryPicture:
-                    //                     "https://www.bellegroveplantation.com/wp-content/uploads/2023/03/bigstock-Professional-Dslr-Camera-And-L-467472545-1024x683.jpg")));
-                    //   },
-                    //   borderRadius: BorderRadius.circular(8),
-                    //   child: Container(
-                    //     margin: const EdgeInsets.all(8),
-                    //     padding: const EdgeInsets.all(8),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       borderRadius: BorderRadius.circular(32),
-                    //     ),
-                    //     child: SvgPicture.asset(
-                    //       'assets/svg/message.svg',
-                    //       color: accentColor,
-                    //     ),
-                    //   ),
-                    // ),
+                    widget.role != "user"
+                        ? InkWell(
+                            onTap: () {
+                              showDeleteDialog(context);
+                            },
+                            borderRadius: BorderRadius.circular(32),
+                            child: Container(
+                              margin: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                    widget.role != "user"
+                        ? InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          EditCountry(
+                                            countryID: countryID,
+                                            title: countryTitle,
+                                            capital: countryCapital,
+                                            description: countryDescription,
+                                            coverImage: countryImage,
+                                            leaderImage: associationLeaderPhoto,
+                                            currency: countryCurrency,
+                                            population: countryPopulation,
+                                            demonym: countryDemonym,
+                                            language: countryLanguage,
+                                            timeZone: countryTimeZone,
+                                            president: countryPresident,
+                                            cuisinesLink: tutorialLink,
+                                            email: associationLeaderEmail,
+                                            number: associationLeaderPhone,
+                                            name: associationLeaderName,
+                                          )));
+                            },
+                            borderRadius: BorderRadius.circular(32),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                color: accentColor,
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                    const SizedBox(
+                      width: 12,
+                    )
                   ],
                   expandedHeight: 320,
                   floating: false,

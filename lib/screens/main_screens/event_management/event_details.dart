@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../api/api_delete.dart';
 import '../../../api/api_get.dart';
 import '../../../utilities/const.dart';
 import '../event/event_chat.dart';
@@ -19,6 +20,7 @@ class EventDetails extends StatefulWidget {
 
 class _EventDetailsState extends State<EventDetails> {
   String eventTitle = "";
+  String eventID = "";
 
   String eventDescription = "";
 
@@ -29,6 +31,7 @@ class _EventDetailsState extends State<EventDetails> {
   String eventImage = "";
 
   String eventDate = "";
+  String eventTime = "";
 
   int eventStockLeft = 0;
 
@@ -49,10 +52,44 @@ class _EventDetailsState extends State<EventDetails> {
     });
   }
 
+  Future<void> showDeleteDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete'),
+          content: const Text('Are you sure you want to delete this event?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                removeEvent(
+                  context: context,
+                  eventID: eventID,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _fetchEventDetails() async {
     try {
       final eventDetails = await getEventDetails(widget.eventID);
       setState(() {
+        eventID = eventDetails.id;
         eventTitle = eventDetails.title;
         eventDescription = eventDetails.description;
         eventLocation = eventDetails.location;
@@ -60,6 +97,7 @@ class _EventDetailsState extends State<EventDetails> {
         eventImage = eventDetails.image ?? "";
         eventDate = eventDetails.date;
         eventStockLeft = eventDetails.unit;
+        eventTime = eventDetails.time;
 
         eventPrice =
             (eventDetails.price == "free" || eventDetails.price == "Free")
@@ -116,7 +154,9 @@ class _EventDetailsState extends State<EventDetails> {
           ),
           actions: [
             InkWell(
-              onTap: () {},
+              onTap: () {
+                showDeleteDialog(context);
+              },
               borderRadius: BorderRadius.circular(32),
               child: Container(
                 padding: const EdgeInsets.all(8),
@@ -138,7 +178,16 @@ class _EventDetailsState extends State<EventDetails> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => const EditEvent()));
+                        builder: (BuildContext context) => EditEvent(
+                              title: eventTitle,
+                              location: eventLocation,
+                              description: eventDescription,
+                              date: eventDate,
+                              time: eventTime,
+                              price: eventPrice,
+                              address: eventAddress,
+                              image: eventImage,
+                            )));
               },
               borderRadius: BorderRadius.circular(32),
               child: Container(

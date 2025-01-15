@@ -129,7 +129,6 @@ Future<void> interestUpdate({
                     const ActiveSession(pageIndex: 4)));
       }
     } else {
-      print(response.statusCode);
       // Handle error response
       String errorMessage = 'Profile Update failed';
       try {
@@ -161,5 +160,158 @@ Future<void> interestUpdate({
       ));
     }
     rethrow;
+  }
+}
+
+Future<void> updateEvent({
+  required BuildContext context,
+  required String eventID,
+  required String title,
+  required String location,
+  required String price,
+  required String category,
+  required String date,
+  required String time,
+  required String address,
+  required String description,
+  required String latitude,
+  required String longitude,
+  required String unit,
+  required File? coverImage,
+}) async {
+  var headers = await getHeaders();
+
+  // Create multipart request
+  var request =
+      http.MultipartRequest('PUT', Uri.parse('$baseUrl/events/$eventID'))
+        ..headers.addAll(headers)
+        ..fields['title'] = title
+        ..fields['location'] = location
+        ..fields['price'] = price
+        ..fields['category'] = category
+        ..fields['date'] = date
+        ..fields['time'] = time
+        ..fields['address'] = address
+        ..fields['description'] = description
+        ..fields['latitude'] = latitude
+        ..fields['longitude'] = longitude
+        ..fields['unit'] = unit;
+  if (coverImage != null) {
+    request.files
+        .add(await http.MultipartFile.fromPath('image', coverImage.path));
+  }
+  // Send the request
+  final response = await request.send();
+
+  // Handle the response
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Event updated successfully!',
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.pop(context);
+    }
+  } else {
+    final responseData = await http.Response.fromStream(response);
+    final String errorMessage =
+        json.decode(responseData.body)['message'] ?? 'Event update failed';
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          errorMessage,
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    throw Exception(errorMessage);
+  }
+}
+
+Future<void> updateCountry({
+  required BuildContext context,
+  required File? coverImage,
+  required File? leaderImage,
+  required String countryTitle,
+  required String countryID,
+  required String countryDescription,
+  required String countryCapital,
+  required String countryCurrency,
+  required String countryPopulation,
+  required String countryDemonym,
+  required String countryLanguage,
+  required String countryTimeZone,
+  required String countryPresident,
+  required String countryCuisinesLink,
+  required String email,
+  required String phoneNumber,
+  required String leaderName,
+  required String latitude,
+  required String longitude,
+}) async {
+  var headers = await getHeaders();
+
+  // Create multipart request
+  var request = http.MultipartRequest(
+      'PUT', Uri.parse('$baseUrl/country/countries/$countryID'))
+    ..headers.addAll(headers)
+    ..fields['title'] = countryTitle
+    ..fields['description'] = countryDescription
+    ..fields['capital'] = countryCapital
+    ..fields['currency'] = countryCurrency
+    ..fields['population'] = countryPopulation
+    ..fields['demonym'] = countryDemonym
+    ..fields['language'] = countryLanguage
+    ..fields['time_zone'] = countryTimeZone
+    ..fields['president'] = countryPresident
+    ..fields['link'] = countryCuisinesLink
+    ..fields['association_leader_email'] = email
+    ..fields['association_leader_phone'] = phoneNumber
+    ..fields['association_leader_name'] = leaderName
+    ..fields['latitude'] = latitude
+    ..fields['longitude'] = longitude;
+  if (coverImage != null && leaderImage != null) {
+    request.files
+        .add(await http.MultipartFile.fromPath('image', coverImage.path));
+  }
+  if (leaderImage != null) {
+    request.files.add(await http.MultipartFile.fromPath(
+        'association_leader_photo', leaderImage.path));
+  }
+  // Send the request
+  final response = await request.send();
+
+  // Handle the response
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Country updated successfully!',
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.pop(context);
+    }
+  } else {
+    final responseData = await http.Response.fromStream(response);
+    final String errorMessage =
+        json.decode(responseData.body)['message'] ?? 'Country update failed';
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          errorMessage,
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    throw Exception(errorMessage);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../api/api_get.dart';
@@ -13,7 +14,9 @@ import 'create_event.dart';
 import 'event_details.dart';
 
 class TicketShop extends StatefulWidget {
-  const TicketShop({super.key});
+  final String? userID;
+  final String? role;
+  const TicketShop({super.key, this.userID, this.role});
 
   @override
   State<TicketShop> createState() => _TicketShopState();
@@ -23,11 +26,34 @@ class _TicketShopState extends State<TicketShop> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   List<Event> _events = [];
+  List<Event> allEvents = [];
+
+  bool _isLoading = true;
 
   Future<void> _loadEvents() async {
-    final fetchedEvents = await getFeaturedEvents();
     setState(() {
-      _events = fetchedEvents.toList();
+      _isLoading = true;
+    });
+    try {
+      final fetchedEvents = await getFeaturedEvents();
+      setState(() {
+        allEvents = fetchedEvents.toList();
+        _searchEvents();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _searchEvents() {
+    setState(() {
+      _events = allEvents
+          .where((event) => event.creatorID!
+              .toLowerCase()
+              .contains(widget.userID!.toLowerCase()))
+          .toList();
     });
   }
 
@@ -87,111 +113,145 @@ class _TicketShopState extends State<TicketShop> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: _events.isEmpty
+                child: _isLoading
                     ? Center(
                         child: Lottie.asset(
-                          'assets/lottie/loading.json',
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _events.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // Number of columns
-                          crossAxisSpacing: 8.0, // Spacing between columns
-                          mainAxisSpacing: 8.0, // Spacing between rows
-                          childAspectRatio:
-                              0.74, // Adjust based on desired card height
-                        ),
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            EventDetails(
-                                              eventID: _events[index].id,
-                                            )));
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    clipBehavior: Clip.hardEdge,
-                                    height: 152,
-                                    width: 240,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child:
-                                        _buildImage("${_events[index].image}"),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    maxLines: 1,
-                                    _events[index].title,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                        'assets/lottie/loading.json',
+                        fit: BoxFit.cover,
+                      ))
+                    : (widget.role == "admin"
+                            ? allEvents.isEmpty
+                            : _events.isEmpty)
+                        ? Center(
+                            child: Column(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/svg/ticket.svg',
+                                  width: 180,
+                                  color: greyColor,
+                                ),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                const Text('No Event Available')
+                              ],
+                            ),
+                          )
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: (widget.role == "admin"
+                                ? allEvents.length
+                                : _events.length),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, // Number of columns
+                              crossAxisSpacing: 8.0, // Spacing between columns
+                              mainAxisSpacing: 8.0, // Spacing between rows
+                              childAspectRatio:
+                                  0.74, // Adjust based on desired card height
+                            ),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                EventDetails(
+                                                  eventID:
+                                                      widget.role == "admin"
+                                                          ? allEvents[index].id
+                                                          : _events[index].id,
+                                                )));
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                          child: Text(
-                                        _events[index].location,
-                                        maxLines: 1,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          overflow: TextOverflow.ellipsis,
+                                      Container(
+                                        clipBehavior: Clip.hardEdge,
+                                        height: 152,
+                                        width: 240,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
                                         ),
-                                      )),
-                                      Text(
-                                        _events[index].date,
-                                        style: const TextStyle(fontSize: 12),
+                                        child: _buildImage(
+                                            "${widget.role == "admin" ? allEvents[index].image : _events[index].image}"),
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
+                                      const SizedBox(height: 8),
                                       Text(
-                                        "\$ ${_events[index].price}",
-                                        style: const TextStyle(fontSize: 12),
+                                        maxLines: 1,
+                                        widget.role == "admin"
+                                            ? allEvents[index].title
+                                            : _events[index].title,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontWeight: FontWeight.w500),
                                       ),
+                                      const SizedBox(height: 8),
                                       Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(
-                                            Icons.theater_comedy_sharp,
-                                            size: 18,
-                                            color: greyColor,
-                                          ),
-                                          const SizedBox(width: 4),
+                                          Expanded(
+                                              child: Text(
+                                            widget.role == "admin"
+                                                ? allEvents[index].location
+                                                : _events[index].location,
+                                            maxLines: 1,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          )),
                                           Text(
-                                            _events[index].category,
+                                            widget.role == "admin"
+                                                ? allEvents[index].date
+                                                : _events[index].date,
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
                                         ],
                                       ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "\$ ${widget.role == "admin" ? allEvents[index].price : _events[index].price}",
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.theater_comedy_sharp,
+                                                size: 18,
+                                                color: greyColor,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                widget.role == "admin"
+                                                    ? allEvents[index].category
+                                                    : _events[index].category,
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ],
-                                  ),
-                                ],
-                              ));
-                        },
-                      ),
+                                  ));
+                            },
+                          ),
               ),
             ],
           ),

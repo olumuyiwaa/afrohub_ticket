@@ -24,7 +24,7 @@ class AfricanCountriesPage extends StatefulWidget {
 class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
   late Future<List<Country>> featuredEvents;
 
-  String? username;
+  String? role;
   bool _isLoading = true;
   List<Country> countries = [];
 
@@ -52,9 +52,9 @@ class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
 
   Future<void> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? fetchedName = prefs.getString('full_name');
+    String? fetchedRole = prefs.getString('role');
     setState(() {
-      username = fetchedName;
+      role = fetchedRole;
     });
   }
 
@@ -77,21 +77,23 @@ class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
         const SizedBox(
           height: 20,
         ),
-        InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          const CreateCountry()));
-            },
-            child: const ButtonBig(
-              buttonText: 'Upload New Country Details',
-              isGradient: true,
-            )),
-        const SizedBox(
-          height: 12,
-        ),
+        role != "user"
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const CreateCountry()));
+                    },
+                    child: const ButtonBig(
+                      buttonText: 'Upload New Country Details',
+                      isGradient: true,
+                    )),
+              )
+            : const SizedBox.shrink(),
         _isLoading
             ? Center(
                 child: Column(
@@ -143,6 +145,7 @@ class _AfricanCountriesPageState extends State<AfricanCountriesPage> {
                                   builder: (BuildContext context) =>
                                       CountryPage(
                                         countryId: country.id,
+                                        role: "role",
                                       )));
                         },
                         child: Column(

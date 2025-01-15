@@ -1,5 +1,6 @@
 class Event {
   final String id;
+  final String? creatorID;
   final String? image;
   final String title;
   final String location;
@@ -12,11 +13,12 @@ class Event {
   final double? longitude;
   final double? latitude;
   final int unit;
-  final String? QRCodeLink;
+  final String? qrCodeLink;
 
   Event({
     required this.id,
     this.image,
+    this.creatorID,
     required this.title,
     this.longitude,
     this.latitude,
@@ -28,12 +30,13 @@ class Event {
     required this.price,
     required this.category,
     required this.unit,
-    this.QRCodeLink,
+    this.qrCodeLink,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       id: json['_id'],
+      creatorID: json['organiser'] ?? "",
       image: json['image'],
       title: json['title'],
       location: json['location'],
@@ -46,7 +49,7 @@ class Event {
       price: json['price'],
       category: json['category'],
       unit: json['unit'] ?? 0,
-      QRCodeLink: json['link'] ?? "",
+      qrCodeLink: json['link'] ?? "",
     );
   }
 }

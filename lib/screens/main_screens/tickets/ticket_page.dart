@@ -11,7 +11,8 @@ import '../../../utilities/const.dart';
 class TicketPage extends StatelessWidget {
   final Event ticketDetails;
   final String unit;
-  TicketPage({super.key, required this.ticketDetails, required this.unit});
+  const TicketPage(
+      {super.key, required this.ticketDetails, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +201,7 @@ class TicketPage extends StatelessWidget {
                 // QR Code Section
                 Center(
                   child: QrImageView(
-                    data: "${ticketDetails.QRCodeLink}",
+                    data: "${ticketDetails.qrCodeLink}",
                     version: QrVersions.auto,
                     size: 360,
                   ),

@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String baseUrl = 'https://ticketbackend-0iem.onrender.com/api';
+const String baseUrl = 'https://afrohub.onrender.com/api';
 
 Future<Map<String, String>> getHeaders() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -35,6 +35,12 @@ Future<void> signInAuth(
       final String email = responseData['email'];
       final String phone = responseData['phone_number'];
       final String token = responseData['token'];
+      final String role = responseData['role'];
+      final String image = responseData.containsKey('image')
+          ? responseData['image'] ?? ""
+          : ''; // Handle cases where the image key might not exist
+      final List<String> interests =
+          List<String>.from(responseData['interests']);
 
       // Store the user details in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -44,6 +50,9 @@ Future<void> signInAuth(
       await prefs.setString('email', email);
       await prefs.setString('phone_number', phone);
       await prefs.setString('password', password);
+      await prefs.setString('role', role);
+      await prefs.setString('image', image);
+      await prefs.setStringList('interests', interests);
       // Show a success Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -94,6 +103,7 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
     'confirm_password': confimPassword,
     'full_name': fullName,
     'phone_number': phoneNumber,
+    "role": "user"
   };
 
   try {
@@ -123,6 +133,7 @@ Future<void> signUpAuth(BuildContext context, String email, String password,
       await prefs.setString('email', email);
       await prefs.setString('phone_number', phone);
       await prefs.setString('password', password);
+      await prefs.setString('role', "user");
 
       // Show a success Snackbar
       ScaffoldMessenger.of(context).showSnackBar(

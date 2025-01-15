@@ -78,24 +78,39 @@ class EventCard2 extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "\$ $price",
-              style: const TextStyle(fontSize: 12),
-            ),
             Row(
               children: [
                 Icon(
-                  Icons.theater_comedy_sharp,
+                  Icons.wallet,
                   size: 18,
                   color: greyColor,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  category,
+                  "\$ $price",
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
-            )
+            ),
+            SizedBox(
+                width: 80,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.theater_comedy_sharp,
+                      size: 18,
+                      color: greyColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                        child: Text(
+                      maxLines: 1,
+                      category,
+                      style: const TextStyle(
+                          fontSize: 12, overflow: TextOverflow.ellipsis),
+                    )),
+                  ],
+                ))
           ],
         ),
       ],

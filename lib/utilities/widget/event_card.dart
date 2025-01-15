@@ -60,7 +60,8 @@ class EventCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    Expanded(
+                        child: Text(
                       title,
                       maxLines: 1,
                       style: const TextStyle(
@@ -68,7 +69,7 @@ class EventCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.w500,
                       ),
-                    ),
+                    )),
                     status != null
                         ? Text(
                             "$status",

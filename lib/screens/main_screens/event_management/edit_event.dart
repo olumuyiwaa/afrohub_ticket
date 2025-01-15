@@ -1,17 +1,38 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:afrohub/utilities/buttons/button_big.dart';
 import 'package:afrohub/utilities/const.dart';
 import 'package:afrohub/utilities/input/input_drop_down.dart';
 import 'package:afrohub/utilities/input/input_field_large.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../utilities/input/input_field.dart';
 
 class EditEvent extends StatefulWidget {
-  const EditEvent({super.key});
+  final String title;
+  final String location;
+  final String description;
+  final String date;
+  final String time;
+  final String price;
+  final String address;
+  final String image;
+  const EditEvent(
+      {super.key,
+      required this.title,
+      required this.location,
+      required this.description,
+      required this.date,
+      required this.time,
+      required this.price,
+      required this.address,
+      required this.image});
 
   @override
   State<EditEvent> createState() => _EditEventState();
@@ -34,19 +55,74 @@ class _EditEventState extends State<EditEvent> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void initState() {
+    super.initState();
+    eventTitle.text = widget.title;
+    eventLocation.text = widget.location;
+    eventDescription.text = widget.description;
+    eventDate.text = widget.date;
+    eventTime.text = widget.time;
+    eventPrice.text = widget.price;
+    eventAddress.text = widget.address;
+  }
+
   final List<String> categories = [
-    "Swimming",
-    "Game",
-    "Football",
-    "Comedy",
-    "Concert",
-    "Trophy",
-    "Tour",
-    "Festival",
-    "Study",
-    "Party",
-    "Olympic",
-    "Culture"
+    "Select Country",
+    "Algeria",
+    "Angola",
+    "Benin",
+    "Botswana",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cameroon",
+    "Central African Republic",
+    "Chad",
+    "Comoros",
+    "Congo",
+    "Congo (DRC)",
+    "Djibouti",
+    "Egypt",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Eswatini",
+    "Ethiopia",
+    "Gabon",
+    "Gambia",
+    "Ghana",
+    "Guinea",
+    "Guinea-Bissau",
+    "Ivory Coast",
+    "Kenya",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Madagascar",
+    "Malawi",
+    "Mali",
+    "Mauritania",
+    "Mauritius",
+    "Morocco",
+    "Mozambique",
+    "Namibia",
+    "Niger",
+    "Nigeria",
+    "Rwanda",
+    "Sao Tome and Principe",
+    "Senegal",
+    "Seychelles",
+    "Sierra Leone",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Sudan",
+    "Tanzania",
+    "Togo",
+    "Tunisia",
+    "Uganda",
+    "Zambia",
+    "Zimbabwe"
   ];
   String? selectedCategory;
 
@@ -131,15 +207,20 @@ class _EditEventState extends State<EditEvent> {
                   color: Colors.grey[200],
                 ),
                 child: _coverImage != null
-                    ? Image.file(_coverImage!, fit: BoxFit.cover)
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, size: 40, color: greyColor),
-                          const SizedBox(height: 8),
-                          const Text("Add Cover Image"),
-                        ],
-                      ),
+                    ? Image.file(
+                        _coverImage!,
+                        fit: BoxFit.cover,
+                      )
+                    : (widget.image.isEmpty
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add, size: 40, color: greyColor),
+                              const SizedBox(height: 8),
+                              const Text("Add Cover Image"),
+                            ],
+                          )
+                        : _buildImage(widget.image)),
               ),
             ),
             const SizedBox(height: 20),
@@ -181,7 +262,7 @@ class _EditEventState extends State<EditEvent> {
               onOptionSelected: (value) => setState(() {
                 selectedCategory = value;
               }),
-              inputTitle: 'Event Category',
+              inputTitle: 'Event Theme',
             ),
 
             // Event Description
@@ -298,5 +379,39 @@ class _EditEventState extends State<EditEvent> {
         ),
       ),
     );
+  }
+
+  Widget _buildImage(String image) {
+    if (image.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: image,
+        placeholder: (context, url) => Center(
+          child: Lottie.asset(
+            'assets/lottie/image.json',
+            fit: BoxFit.cover,
+          ),
+        ),
+        errorWidget: (context, url, error) => const Icon(
+          Icons.image_not_supported_outlined,
+          size: 160,
+        ),
+        fit: BoxFit.cover,
+      );
+    } else {
+      if (image.isNotEmpty) {
+        final Uint8List decodedBytes = base64Decode(image);
+        return Image.memory(
+          decodedBytes,
+          fit: BoxFit.cover,
+          height: 254,
+          width: 254,
+        );
+      } else {
+        return const Icon(
+          Icons.image_not_supported_outlined,
+          size: 160,
+        );
+      }
+    }
   }
 }

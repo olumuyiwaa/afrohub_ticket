@@ -30,11 +30,22 @@ class _HomePageState extends State<HomePage> {
 
   List<Event> _events = [];
 
+  bool _isLoading = true;
+
   Future<void> _loadEvents() async {
-    final fetchedEvents = await getFeaturedEvents();
     setState(() {
-      _events = fetchedEvents.toList();
+      _isLoading = true;
     });
+    try {
+      final fetchedEvents = await getFeaturedEvents();
+      setState(() {
+        _events = fetchedEvents.toList();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -53,21 +64,6 @@ class _HomePageState extends State<HomePage> {
       userId = fetchedID;
     });
   }
-
-  final List<String> categories = [
-    "swimming",
-    "game",
-    "football",
-    "comedy",
-    "concert",
-    "trophy",
-    "tour",
-    "festival",
-    "study",
-    "party",
-    "olympic",
-    "culture"
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -206,47 +202,50 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 8,
             ),
-            _events.isEmpty
+            _isLoading
                 ? Center(
                     child: Lottie.asset(
-                      'assets/lottie/loading.json',
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _events.length < 10 ? _events.length : 10,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // Number of columns
-                      crossAxisSpacing: 8.0, // Spacing between columns
-                      mainAxisSpacing: 8.0, // Spacing between rows
-                      childAspectRatio:
-                          0.74, // Adjust based on desired card height
-                    ),
-                    itemBuilder: (context, index) {
-                      final event = _events[index];
-                      return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        EventPage(
-                                          eventId: event.id,
-                                        )));
-                          },
-                          child: EventCard2(
-                            title: event.title,
-                            image: event.image ?? "",
-                            location: event.location,
-                            date: event.date,
-                            price: event.price,
-                            category: event.category,
-                          ));
-                    },
-                  )
+                    'assets/lottie/loading.json',
+                    fit: BoxFit.cover,
+                  ))
+                : _events.isEmpty
+                    ? const Center(
+                        child: Text('No Event Available'),
+                      )
+                    : GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _events.length < 10 ? _events.length : 10,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // Number of columns
+                          crossAxisSpacing: 8.0, // Spacing between columns
+                          mainAxisSpacing: 8.0, // Spacing between rows
+                          childAspectRatio:
+                              0.74, // Adjust based on desired card height
+                        ),
+                        itemBuilder: (context, index) {
+                          final event = _events[index];
+                          return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            EventPage(
+                                              eventId: event.id,
+                                            )));
+                              },
+                              child: EventCard2(
+                                title: event.title,
+                                image: event.image ?? "",
+                                location: event.location,
+                                date: event.date,
+                                price: event.price,
+                                category: event.category,
+                              ));
+                        },
+                      )
           ],
         ),
         const SizedBox(

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/class_countries.dart';
 import '../model/class_events.dart';
 import '../model/class_tickets.dart';
+import '../model/class_users.dart';
 import 'api_helper.dart';
 
 Future<Map<String, dynamic>> getUserInfo() async {
@@ -29,16 +30,12 @@ Future<void> getUserProfile(String? userID) async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> responseData = json.decode(response.body);
     final String id = responseData['_id'];
-    final String image = responseData['image'];
     final String name = responseData['full_name'];
     final String phone = responseData['phone_number'];
-
-    // Decode the interests field
-    final List<String> rawInterests =
-        List<String>.from(responseData['interests']);
-    final List<String> interests = rawInterests.isNotEmpty
-        ? List<String>.from(jsonDecode(rawInterests[0]))
-        : [];
+    final String image = responseData.containsKey('image')
+        ? responseData['image']
+        : ''; // Handle cases where the image key might not exist
+    final List<String> interests = List<String>.from(responseData['interests']);
 
     // Store the user details in SharedPreferences
     final prefs = await SharedPreferences.getInstance();
@@ -137,5 +134,19 @@ Future<List<Ticket>> fetchTickets() async {
     return jsonData.map((json) => Ticket.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load tickets: ${response.reasonPhrase}');
+  }
+}
+
+Future<List<User>> fetchUsers() async {
+  final headers = await getHeaders();
+  final response = await http.get(
+    Uri.parse('$baseUrl/getusers/all-users'),
+    headers: headers,
+  );
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body)['data'];
+    return data.map((userJson) => User.fromJson(userJson)).toList();
+  } else {
+    throw Exception('Failed to load users');
   }
 }

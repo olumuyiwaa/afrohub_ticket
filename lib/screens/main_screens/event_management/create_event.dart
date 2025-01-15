@@ -35,8 +35,9 @@ class _CreateEventState extends State<CreateEvent> {
 
   Future<void> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? fetchedID = prefs.getString('id');
     setState(() {
-      userID = prefs.getString('id');
+      userID = fetchedID;
     });
   }
 

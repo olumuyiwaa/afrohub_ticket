@@ -95,7 +95,7 @@ class _OnboardInterestState extends State<OnboardInterest> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Column(
+          child: ListView(
         children: [
           const Padding(
             padding: EdgeInsets.all(40),
